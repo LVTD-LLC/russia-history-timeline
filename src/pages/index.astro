@@ -39,6 +39,14 @@ import { events, rulers } from "../data/timeline";
           <button type="button" data-set-lang="en" aria-pressed="true">EN</button>
           <button type="button" data-set-lang="ru" aria-pressed="false">RU</button>
         </div>
+        <script is:inline>
+          (() => {
+            const lang = document.documentElement.dataset.lang === "ru" ? "ru" : "en";
+            document.querySelectorAll("[data-set-lang]").forEach((button) => {
+              button.setAttribute("aria-pressed", String(button.dataset.setLang === lang));
+            });
+          })();
+        </script>
       </nav>
 
       <div class="hero-grid">

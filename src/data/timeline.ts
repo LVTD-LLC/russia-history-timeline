@@ -156,6 +156,42 @@ export const rulers: TimelineItem[] = [
     },
   },
   {
+    date: "1953-1964",
+    era: { en: "USSR", ru: "СССР" },
+    title: { en: "Nikita Khrushchev", ru: "Никита Хрущев" },
+    description: {
+      en: "Launched de-Stalinization, the Thaw, and high-stakes Cold War confrontation.",
+      ru: "Начал десталинизацию, оттепель и период острых конфликтов холодной войны.",
+    },
+  },
+  {
+    date: "1964-1982",
+    era: { en: "USSR", ru: "СССР" },
+    title: { en: "Leonid Brezhnev", ru: "Леонид Брежнев" },
+    description: {
+      en: "Oversaw superpower stability, stagnation, detente, and the invasion of Afghanistan.",
+      ru: "Правил в период сверхдержавной стабильности, застоя, разрядки и вторжения в Афганистан.",
+    },
+  },
+  {
+    date: "1982-1984",
+    era: { en: "USSR", ru: "СССР" },
+    title: { en: "Yuri Andropov", ru: "Юрий Андропов" },
+    description: {
+      en: "A short tenure focused on discipline, anti-corruption signals, and cautious reform pressure.",
+      ru: "Краткое правление с акцентом на дисциплину, сигналы борьбы с коррупцией и осторожное давление реформ.",
+    },
+  },
+  {
+    date: "1984-1985",
+    era: { en: "USSR", ru: "СССР" },
+    title: { en: "Konstantin Chernenko", ru: "Константин Черненко" },
+    description: {
+      en: "Briefly led the late Soviet system before Gorbachev's reform era began.",
+      ru: "Недолго возглавлял позднесоветскую систему перед началом реформ Горбачева.",
+    },
+  },
+  {
     date: "1985-1991",
     era: { en: "USSR", ru: "СССР" },
     title: { en: "Mikhail Gorbachev", ru: "Михаил Горбачев" },
