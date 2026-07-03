@@ -174,6 +174,24 @@ export const rulers: TimelineItem[] = [
     },
   },
   {
+    date: "2000-2008",
+    era: { en: "Russian Federation", ru: "Российская Федерация" },
+    title: { en: "Vladimir Putin", ru: "Владимир Путин" },
+    description: {
+      en: "First presidential period, marked by centralization, economic recovery after the 1990s, and the second Chechen war.",
+      ru: "Первый президентский период, отмеченный централизацией, восстановлением экономики после 1990-х и второй чеченской войной.",
+    },
+  },
+  {
+    date: "2008-2012",
+    era: { en: "Russian Federation", ru: "Российская Федерация" },
+    title: { en: "Dmitry Medvedev", ru: "Дмитрий Медведев" },
+    description: {
+      en: "Presidency associated with a modernization agenda and the 2008 war with Georgia.",
+      ru: "Президентство, связанное с повесткой модернизации и войной с Грузией в 2008 году.",
+    },
+  },
+  {
     date: "2012-present",
     era: { en: "Russian Federation", ru: "Российская Федерация" },
     title: { en: "Vladimir Putin", ru: "Владимир Путин" },
