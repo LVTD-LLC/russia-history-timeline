@@ -3,6 +3,8 @@ name: ReviewGate
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
+  issue_comment:
+    types: [created]
   workflow_dispatch:
 
 permissions:
@@ -12,7 +14,7 @@ permissions:
   checks: write
 
 concurrency:
-  group: reviewgate-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: reviewgate-${{ github.workflow }}-${{ github.event.pull_request.number || github.event.issue.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -21,6 +23,7 @@ jobs:
       ${{
         github.event_name == 'workflow_dispatch' ||
         (
+          github.event_name == 'pull_request' &&
           github.event.pull_request.head.repo.full_name == github.repository &&
           github.actor != 'dependabot[bot]'
         )
@@ -34,3 +37,141 @@ jobs:
         with:
           openrouter_api_key: ${{ secrets.OPENROUTER_API_KEY }}
           config: .reviewgate.yml
+
+  review-comment:
+    if: >-
+      ${{
+        github.event_name == 'issue_comment' &&
+        github.event.action == 'created' &&
+        github.event.issue.pull_request &&
+        github.event.comment.body == '@reviewgate review' &&
+        github.actor != 'dependabot[bot]'
+      }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve pull request
+        id: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          set -euo pipefail
+          pr_json_path="$RUNNER_TEMP/reviewgate-pr.json"
+          event_path="$RUNNER_TEMP/reviewgate-pull-request-event.json"
+
+          gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" > "$pr_json_path"
+
+          head_repo="$(jq -r '.head.repo.full_name' "$pr_json_path")"
+          if [ "$head_repo" != "$GITHUB_REPOSITORY" ]; then
+            echo "ReviewGate comment trigger skipped: PR head repository is $head_repo, not $GITHUB_REPOSITORY."
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          jq -n \
+            --slurpfile pr "$pr_json_path" \
+            --slurpfile event "$GITHUB_EVENT_PATH" \
+            '{pull_request: $pr[0], repository: $event[0].repository}' \
+            > "$event_path"
+
+          echo "should_run=true" >> "$GITHUB_OUTPUT"
+          echo "head_sha=$(jq -r '.head.sha' "$pr_json_path")" >> "$GITHUB_OUTPUT"
+          echo "base_ref=$(jq -r '.base.ref' "$pr_json_path")" >> "$GITHUB_OUTPUT"
+          echo "event_path=$event_path" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        if: ${{ steps.pr.outputs.should_run == 'true' }}
+        with:
+          ref: ${{ steps.pr.outputs.head_sha }}
+          fetch-depth: 0
+
+      - name: Fetch base branch
+        if: ${{ steps.pr.outputs.should_run == 'true' }}
+        env:
+          BASE_REF: ${{ steps.pr.outputs.base_ref }}
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --prune origin "+refs/heads/${BASE_REF}:refs/remotes/origin/${BASE_REF}"
+
+      - name: Checkout ReviewGate action source
+        if: ${{ steps.pr.outputs.should_run == 'true' }}
+        run: |
+          set -euo pipefail
+          git clone --depth 1 --branch v0 https://github.com/LVTD-LLC/reviewgate "$RUNNER_TEMP/reviewgate-action"
+
+      - name: Publish ReviewGate start signal
+        if: ${{ steps.pr.outputs.should_run == 'true' }}
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_EVENT_NAME: pull_request
+          GITHUB_EVENT_PATH: ${{ steps.pr.outputs.event_path }}
+        run: |
+          set -euo pipefail
+          cargo run --locked --manifest-path "$RUNNER_TEMP/reviewgate-action/Cargo.toml" \
+            -p reviewgate-cli -- publish-start-signal \
+            --repo "$GITHUB_WORKSPACE"
+
+      - name: Run ReviewGate
+        if: ${{ steps.pr.outputs.should_run == 'true' }}
+        env:
+          GITHUB_EVENT_NAME: pull_request
+          GITHUB_EVENT_PATH: ${{ steps.pr.outputs.event_path }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          REVIEWGATE_CONFIG: .reviewgate.yml
+          REVIEWGATE_MIN_SEVERITY: P4
+        run: |
+          set -euo pipefail
+          cargo run --locked --manifest-path "$RUNNER_TEMP/reviewgate-action/Cargo.toml" \
+            -p reviewgate-cli -- review-pr \
+            --repo "$GITHUB_WORKSPACE" \
+            --config "$REVIEWGATE_CONFIG" \
+            --json-out "$GITHUB_WORKSPACE/.reviewgate/review.json" \
+            --summary-out "$GITHUB_WORKSPACE/.reviewgate/summary.md" \
+            --min-severity "$REVIEWGATE_MIN_SEVERITY"
+
+      - name: Publish ReviewGate findings
+        if: ${{ steps.pr.outputs.should_run == 'true' }}
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_EVENT_NAME: pull_request
+          GITHUB_EVENT_PATH: ${{ steps.pr.outputs.event_path }}
+          REVIEWGATE_MIN_SEVERITY: P4
+        run: |
+          set -euo pipefail
+          cargo run --locked --manifest-path "$RUNNER_TEMP/reviewgate-action/Cargo.toml" \
+            -p reviewgate-cli -- publish-findings \
+            --repo "$GITHUB_WORKSPACE" \
+            --input "$GITHUB_WORKSPACE/.reviewgate/review.json" \
+            --min-severity "$REVIEWGATE_MIN_SEVERITY"
+
+      - name: Publish ReviewGate summary
+        if: ${{ steps.pr.outputs.should_run == 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_EVENT_NAME: pull_request
+          GITHUB_EVENT_PATH: ${{ steps.pr.outputs.event_path }}
+          REVIEWGATE_MIN_SEVERITY: P4
+        run: |
+          set -euo pipefail
+          cargo run --locked --manifest-path "$RUNNER_TEMP/reviewgate-action/Cargo.toml" \
+            -p reviewgate-cli -- publish-summary \
+            --repo "$GITHUB_WORKSPACE" \
+            --input "$GITHUB_WORKSPACE/.reviewgate/review.json" \
+            --summary-out "$GITHUB_WORKSPACE/.reviewgate/summary.md" \
+            --min-severity "$REVIEWGATE_MIN_SEVERITY"
+
+      - name: Publish ReviewGate check run
+        if: ${{ always() && steps.pr.outputs.should_run == 'true' }}
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_EVENT_NAME: pull_request
+          GITHUB_EVENT_PATH: ${{ steps.pr.outputs.event_path }}
+        run: |
+          set -euo pipefail
+          cargo run --locked --manifest-path "$RUNNER_TEMP/reviewgate-action/Cargo.toml" \
+            -p reviewgate-cli -- publish-check-run \
+            --repo "$GITHUB_WORKSPACE" \
+            --input "$GITHUB_WORKSPACE/.reviewgate/review.json"

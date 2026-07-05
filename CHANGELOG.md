@@ -3,6 +3,7 @@
 ## 2026-07-05
 
 - Added ReviewGate PR review workflow and configuration.
+- Added an `@reviewgate review` PR comment trigger for rerunning ReviewGate on demand.
 
 ## 2026-07-04
 
