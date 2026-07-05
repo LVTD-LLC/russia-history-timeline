@@ -4,6 +4,8 @@
 
 - Replaced the vertical comparison timeline with horizontal proportional lanes for rulers and major events.
 - Added compact thick timeline bands with short descriptions that expand into full details on hover or keyboard focus.
+- Added ReviewGate PR review workflow and configuration.
+- Added an `@reviewgate review` PR comment trigger for rerunning ReviewGate on demand.
 
 ## 2026-07-04
 
