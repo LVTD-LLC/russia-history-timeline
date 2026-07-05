@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-07-05
+
+- Replaced the vertical comparison timeline with horizontal proportional lanes for rulers and major events.
+- Added compact thick timeline bands with short descriptions that expand into full details on hover or keyboard focus.
+
 ## 2026-07-04
 
 - Reworked the timeline into a shared proportional year scale so ruler spans and major-event markers align vertically.
