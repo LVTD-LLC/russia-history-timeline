@@ -245,18 +245,19 @@ const yearMarks = Array.from(
         aria-label="Historical timeline"
         style={`--content-width: ${timelineContentWidth}px; --scale-width: ${TIMELINE_SCALE_WIDTH}px; --ruler-lane-height: ${rulerLaneHeight}px; --event-lane-height: ${eventLaneHeight}px;`}
       >
+        <div class="timeline-ruler-viewport" aria-hidden="true">
+          <div class="year-ruler" data-ruler-track>
+            {
+              yearMarks.map((year) => (
+                <div class="year-mark" style={`--left: ${Math.round((year - TIMELINE_START_YEAR) * YEAR_SCALE_PX)}px`}>
+                  <span>{year}</span>
+                </div>
+              ))
+            }
+          </div>
+        </div>
         <div class="timeline-frame">
           <div class="timeline-content">
-            <div class="year-ruler" aria-hidden="true">
-              {
-                yearMarks.map((year) => (
-                  <div class="year-mark" style={`--left: ${Math.round((year - TIMELINE_START_YEAR) * YEAR_SCALE_PX)}px`}>
-                    <span>{year}</span>
-                  </div>
-                ))
-              }
-            </div>
-
               <div class="horizontal-lane rulers-lane" style={`--lane-height: ${rulerLaneHeight}px;`}>
                 <div class="lane-heading">
                   <span class="label-dot"></span>
@@ -288,20 +289,20 @@ const yearMarks = Array.from(
                           <span class="lang-en">{item.summary.en}</span>
                           <span class="lang-ru">{item.summary.ru}</span>
                         </span>
-                      </div>
-                      <div class="detail-card">
-                        <p class="era">
-                          <span class="lang-en">{item.era.en}</span>
-                          <span class="lang-ru">{item.era.ru}</span>
-                        </p>
-                        <h3>
-                          <span class="lang-en">{item.title.en}</span>
-                          <span class="lang-ru">{item.title.ru}</span>
-                        </h3>
-                        <p>
-                          <span class="lang-en">{item.description.en}</span>
-                          <span class="lang-ru">{item.description.ru}</span>
-                        </p>
+                        <div class="detail-card">
+                          <p class="era">
+                            <span class="lang-en">{item.era.en}</span>
+                            <span class="lang-ru">{item.era.ru}</span>
+                          </p>
+                          <h3>
+                            <span class="lang-en">{item.title.en}</span>
+                            <span class="lang-ru">{item.title.ru}</span>
+                          </h3>
+                          <p>
+                            <span class="lang-en">{item.description.en}</span>
+                            <span class="lang-ru">{item.description.ru}</span>
+                          </p>
+                        </div>
                       </div>
                     </article>
                   ))
@@ -339,20 +340,20 @@ const yearMarks = Array.from(
                           <span class="lang-en">{item.summary.en}</span>
                           <span class="lang-ru">{item.summary.ru}</span>
                         </span>
-                      </div>
-                      <div class="detail-card">
-                        <p class="era">
-                          <span class="lang-en">{item.era.en}</span>
-                          <span class="lang-ru">{item.era.ru}</span>
-                        </p>
-                        <h3>
-                          <span class="lang-en">{item.title.en}</span>
-                          <span class="lang-ru">{item.title.ru}</span>
-                        </h3>
-                        <p>
-                          <span class="lang-en">{item.description.en}</span>
-                          <span class="lang-ru">{item.description.ru}</span>
-                        </p>
+                        <div class="detail-card">
+                          <p class="era">
+                            <span class="lang-en">{item.era.en}</span>
+                            <span class="lang-ru">{item.era.ru}</span>
+                          </p>
+                          <h3>
+                            <span class="lang-en">{item.title.en}</span>
+                            <span class="lang-ru">{item.title.ru}</span>
+                          </h3>
+                          <p>
+                            <span class="lang-en">{item.description.en}</span>
+                            <span class="lang-ru">{item.description.ru}</span>
+                          </p>
+                        </div>
                       </div>
                     </article>
                   ))
@@ -391,6 +392,18 @@ const yearMarks = Array.from(
       });
 
       setLanguage(initial);
+
+      const timelineFrame = document.querySelector(".timeline-frame");
+      const rulerTrack = document.querySelector("[data-ruler-track]");
+
+      if (timelineFrame instanceof HTMLElement && rulerTrack instanceof HTMLElement) {
+        const syncRuler = () => {
+          rulerTrack.style.transform = `translateX(-${timelineFrame.scrollLeft}px)`;
+        };
+
+        timelineFrame.addEventListener("scroll", syncRuler, { passive: true });
+        syncRuler();
+      }
     </script>
   </body>
 </html>
@@ -664,10 +677,22 @@ const yearMarks = Array.from(
     padding: 24px 0 88px;
   }
 
+  .timeline-ruler-viewport {
+    position: sticky;
+    top: 0;
+    z-index: 16;
+    width: 100%;
+    height: 54px;
+    overflow: hidden;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    background: rgba(244, 239, 230, 0.92);
+    backdrop-filter: blur(12px);
+  }
+
   .timeline-frame {
     overflow-x: auto;
-    overflow-y: visible;
-    padding: 0 0 18px;
+    padding: 18px 0;
     scroll-padding-inline: 18px;
   }
 
@@ -684,20 +709,13 @@ const yearMarks = Array.from(
   .timeline-content {
     width: var(--content-width);
     min-width: 980px;
-    padding-top: 12px;
   }
 
   .year-ruler {
-    position: sticky;
-    top: 0;
-    z-index: 6;
+    position: relative;
     height: 54px;
     width: var(--scale-width);
-    margin-bottom: 18px;
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
-    background: rgba(244, 239, 230, 0.92);
-    backdrop-filter: blur(12px);
+    will-change: transform;
   }
 
   .year-ruler::before {
@@ -797,6 +815,7 @@ const yearMarks = Array.from(
     top: calc(94px + var(--row) * 86px);
     left: var(--left);
     z-index: 1;
+    --expanded-width: min(420px, calc(var(--width) + 260px));
     width: var(--width);
     min-width: var(--width);
     opacity: 0;
@@ -806,7 +825,8 @@ const yearMarks = Array.from(
   }
 
   .timeline-band:hover,
-  .timeline-band:focus {
+  .timeline-band:focus,
+  .timeline-band:focus-within {
     z-index: 12;
   }
 
@@ -815,7 +835,9 @@ const yearMarks = Array.from(
     display: grid;
     align-content: center;
     gap: 2px;
-    height: 66px;
+    width: var(--width);
+    min-height: 66px;
+    max-height: 66px;
     overflow: hidden;
     border: 1px solid rgba(159, 53, 44, 0.32);
     border-radius: 8px;
@@ -826,6 +848,8 @@ const yearMarks = Array.from(
       transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
       border-color 220ms ease,
       background 220ms ease,
+      max-height 260ms cubic-bezier(0.16, 1, 0.3, 1),
+      width 260ms cubic-bezier(0.16, 1, 0.3, 1),
       box-shadow 220ms ease;
   }
 
@@ -848,11 +872,20 @@ const yearMarks = Array.from(
   }
 
   .timeline-band:hover .compact-band,
-  .timeline-band:focus .compact-band {
+  .timeline-band:focus .compact-band,
+  .timeline-band:focus-within .compact-band {
+    width: var(--expanded-width);
+    max-height: 520px;
     transform: translateY(-4px) scale(1.02);
     border-color: rgba(34, 32, 29, 0.34);
     background: var(--paper-strong);
     box-shadow: 0 20px 44px rgba(50, 42, 31, 0.16);
+  }
+
+  .align-end:hover .compact-band,
+  .align-end:focus .compact-band,
+  .align-end:focus-within .compact-band {
+    margin-left: calc(var(--width) - var(--expanded-width));
   }
 
   .date {
@@ -896,29 +929,23 @@ const yearMarks = Array.from(
   }
 
   .detail-card {
-    position: absolute;
-    top: 54px;
-    left: 0;
-    width: min(420px, calc(var(--width) + 260px));
+    width: 100%;
+    margin-top: 12px;
     border: 1px solid rgba(34, 32, 29, 0.18);
     border-left: 5px solid var(--red);
     border-radius: 8px;
-    padding: 15px 18px 17px;
+    padding: 14px 16px 16px;
     background: rgba(255, 250, 240, 0.98);
-    box-shadow: 0 28px 70px rgba(50, 42, 31, 0.18);
+    box-shadow: 0 18px 42px rgba(50, 42, 31, 0.14);
     opacity: 0;
-    pointer-events: none;
-    transform: translateY(-8px) scale(0.98);
-    transform-origin: top left;
+    transform: translateY(-4px);
     transition:
       opacity 180ms ease,
       transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .align-end .detail-card {
-    right: 0;
-    left: auto;
-    transform-origin: top right;
+    margin-left: auto;
   }
 
   .events .detail-card {
@@ -926,9 +953,10 @@ const yearMarks = Array.from(
   }
 
   .timeline-band:hover .detail-card,
-  .timeline-band:focus .detail-card {
+  .timeline-band:focus .detail-card,
+  .timeline-band:focus-within .detail-card {
     opacity: 1;
-    transform: translateY(8px) scale(1);
+    transform: translateY(0);
   }
 
   .detail-card h3 {
