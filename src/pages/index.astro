@@ -3,19 +3,27 @@ import { events, rulers, type TimelineItem } from "../data/timeline";
 
 const TIMELINE_START_YEAR = 500;
 const TIMELINE_END_YEAR = new Date().getFullYear();
-const YEAR_SCALE_PX = 3;
-const LABEL_GAP_PX = 14;
-const LABEL_HEIGHT_ESTIMATE_PX = 138;
-const TIMELINE_SCALE_HEIGHT = (TIMELINE_END_YEAR - TIMELINE_START_YEAR) * YEAR_SCALE_PX;
+const YEAR_SCALE_PX = 2.7;
+const BAND_ROW_HEIGHT_PX = 86;
+const BAND_ROW_GAP_PX = 16;
+const LANE_PADDING_PX = 330;
+const MIN_RULER_BAND_WIDTH_PX = 132;
+const MIN_EVENT_BAND_WIDTH_PX = 112;
+const TIMELINE_SCALE_WIDTH = Math.round((TIMELINE_END_YEAR - TIMELINE_START_YEAR) * YEAR_SCALE_PX);
 
 type TimelineLane = "rulers" | "events";
 
 type PlacedTimelineItem = TimelineItem & {
+  alignEnd: boolean;
   endYear: number;
-  labelTop: number;
-  rangeHeight: number;
+  left: number;
+  row: number;
   startYear: number;
-  top: number;
+  summary: {
+    en: string;
+    ru: string;
+  };
+  width: number;
 };
 
 function parseYearToken(token: string | undefined, isRangeEnd = false) {
@@ -48,8 +56,18 @@ function getYearRange(date: string) {
   };
 }
 
+function getShortDescription(text: string) {
+  const firstSentence = text.split(/(?<=[.!?])\s+/)[0] ?? text;
+
+  if (firstSentence.length <= 92) {
+    return firstSentence;
+  }
+
+  return `${firstSentence.slice(0, 89).trim()}...`;
+}
+
 function placeTimelineItems(items: TimelineItem[], lane: TimelineLane): PlacedTimelineItem[] {
-  let previousLabelBottom = 0;
+  const rowEnds: number[] = [];
 
   return items
     .map((item) => {
@@ -63,28 +81,40 @@ function placeTimelineItems(items: TimelineItem[], lane: TimelineLane): PlacedTi
     })
     .sort((first, second) => first.startYear - second.startYear || first.endYear - second.endYear)
     .map(({ item, startYear, endYear }) => {
-      const top = (startYear - TIMELINE_START_YEAR) * YEAR_SCALE_PX;
-      const rangeHeight = Math.max((endYear - startYear) * YEAR_SCALE_PX, lane === "rulers" ? 10 : 8);
-      const labelTop = Math.max(top - 8, previousLabelBottom + LABEL_GAP_PX);
-      previousLabelBottom = labelTop + LABEL_HEIGHT_ESTIMATE_PX;
+      const left = Math.round((startYear - TIMELINE_START_YEAR) * YEAR_SCALE_PX);
+      const proportionalWidth = Math.round(Math.max(endYear - startYear, 1) * YEAR_SCALE_PX);
+      const minWidth = lane === "rulers" ? MIN_RULER_BAND_WIDTH_PX : MIN_EVENT_BAND_WIDTH_PX;
+      const width = Math.max(proportionalWidth, minWidth);
+      const row = rowEnds.findIndex((rowEnd) => rowEnd <= left);
+      const resolvedRow = row === -1 ? rowEnds.length : row;
+      rowEnds[resolvedRow] = left + width + BAND_ROW_GAP_PX;
 
       return {
         ...item,
+        alignEnd: left > TIMELINE_SCALE_WIDTH - 520,
         endYear,
-        labelTop,
-        rangeHeight,
+        left,
+        row: resolvedRow,
         startYear,
-        top,
+        summary: {
+          en: getShortDescription(item.description.en),
+          ru: getShortDescription(item.description.ru),
+        },
+        width,
       };
     });
 }
 
 const placedRulers = placeTimelineItems(rulers, "rulers");
 const placedEvents = placeTimelineItems(events, "events");
-const timelineCanvasHeight = Math.max(
-  TIMELINE_SCALE_HEIGHT,
-  ...[...placedRulers, ...placedEvents].map((item) => item.labelTop + LABEL_HEIGHT_ESTIMATE_PX),
-);
+const timelineContentWidth = Math.max(
+  TIMELINE_SCALE_WIDTH,
+  ...[...placedRulers, ...placedEvents].map((item) => item.left + item.width),
+) + 24;
+const rulerRowCount = Math.max(...placedRulers.map((item) => item.row), 0) + 1;
+const eventRowCount = Math.max(...placedEvents.map((item) => item.row), 0) + 1;
+const rulerLaneHeight = rulerRowCount * BAND_ROW_HEIGHT_PX + LANE_PADDING_PX;
+const eventLaneHeight = eventRowCount * BAND_ROW_HEIGHT_PX + LANE_PADDING_PX;
 const yearMarks = Array.from(
   { length: Math.floor((TIMELINE_END_YEAR - TIMELINE_START_YEAR) / 100) + 1 },
   (_, index) => TIMELINE_START_YEAR + index * 100,
@@ -202,10 +232,10 @@ const yearMarks = Array.from(
         </div>
         <p>
           <span class="lang-en">
-            The left timeline follows authority: tribes, princes, tsars, emperors, Soviet leaders, and presidents. The right timeline follows turning points in statehood, war, religion, reform, and collapse.
+            The upper track follows authority: tribes, princes, tsars, emperors, Soviet leaders, and presidents. The lower track follows turning points in statehood, war, religion, reform, and collapse.
           </span>
           <span class="lang-ru">
-            Левая линия показывает власть: племена, князей, царей, императоров, советских лидеров и президентов. Правая линия показывает переломы в государственности, войне, религии, реформах и распаде.
+            Верхняя линия показывает власть: племена, князей, царей, императоров, советских лидеров и президентов. Нижняя линия показывает переломы в государственности, войне, религии, реформах и распаде.
           </span>
         </p>
       </section>
@@ -213,101 +243,122 @@ const yearMarks = Array.from(
       <section
         class="timeline-shell"
         aria-label="Historical timeline"
-        style={`--scale-height: ${TIMELINE_SCALE_HEIGHT}px; --canvas-height: ${timelineCanvasHeight}px;`}
+        style={`--content-width: ${timelineContentWidth}px; --scale-width: ${TIMELINE_SCALE_WIDTH}px; --ruler-lane-height: ${rulerLaneHeight}px; --event-lane-height: ${eventLaneHeight}px;`}
       >
-        <div class="timeline-head-scroll" data-timeline-scroll>
-          <div class="timeline-content">
-            <div class="timeline-head-grid">
-              <div class="axis-head" aria-hidden="true"></div>
-              <div class="column-head rulers-head">
-                <span class="label-dot"></span>
-                <h2>
-                  <span class="lang-en">Rulers</span>
-                  <span class="lang-ru">Правители</span>
-                </h2>
-              </div>
-              <div class="column-head events-head">
-                <span class="label-dot"></span>
-                <h2>
-                  <span class="lang-en">Major Events</span>
-                  <span class="lang-ru">Ключевые события</span>
-                </h2>
-              </div>
-            </div>
+        <div class="timeline-ruler-viewport" aria-hidden="true">
+          <div class="year-ruler" data-ruler-track>
+            {
+              yearMarks.map((year) => (
+                <div class="year-mark" style={`--left: ${Math.round((year - TIMELINE_START_YEAR) * YEAR_SCALE_PX)}px`}>
+                  <span>{year}</span>
+                </div>
+              ))
+            }
           </div>
         </div>
-
-        <div class="timeline-scroll" data-timeline-scroll>
+        <div class="timeline-frame">
           <div class="timeline-content">
-            <div class="scaled-timeline">
-            <div class="year-axis" aria-hidden="true">
-              {
-                yearMarks.map((year) => (
-                  <div class="year-mark" style={`--top: ${(year - TIMELINE_START_YEAR) * YEAR_SCALE_PX}px`}>
-                    <span>{year}</span>
+              <div class="horizontal-lane rulers-lane" style={`--lane-height: ${rulerLaneHeight}px;`}>
+                <div class="lane-heading">
+                  <span class="label-dot"></span>
+                  <div>
+                    <h2>
+                      <span class="lang-en">Rulers</span>
+                      <span class="lang-ru">Правители</span>
+                    </h2>
+                    <p>
+                      <span class="lang-en">Reigns and political leadership periods</span>
+                      <span class="lang-ru">Периоды правления и политического лидерства</span>
+                    </p>
                   </div>
-                ))
-              }
-            </div>
+                </div>
+                {
+                  placedRulers.map((item, index) => (
+                    <article
+                      class:list={["timeline-band", "rulers", { "align-end": item.alignEnd }]}
+                      style={`--left: ${item.left}px; --row: ${item.row}; --width: ${item.width}px; --delay: ${index * 22}ms`}
+                      tabindex="0"
+                    >
+                      <div class="compact-band">
+                        <span class="date">{item.date}</span>
+                        <strong>
+                          <span class="lang-en">{item.title.en}</span>
+                          <span class="lang-ru">{item.title.ru}</span>
+                        </strong>
+                        <span class="band-summary">
+                          <span class="lang-en">{item.summary.en}</span>
+                          <span class="lang-ru">{item.summary.ru}</span>
+                        </span>
+                        <div class="detail-card">
+                          <p class="era">
+                            <span class="lang-en">{item.era.en}</span>
+                            <span class="lang-ru">{item.era.ru}</span>
+                          </p>
+                          <h3>
+                            <span class="lang-en">{item.title.en}</span>
+                            <span class="lang-ru">{item.title.ru}</span>
+                          </h3>
+                          <p>
+                            <span class="lang-en">{item.description.en}</span>
+                            <span class="lang-ru">{item.description.ru}</span>
+                          </p>
+                        </div>
+                      </div>
+                    </article>
+                  ))
+                }
+              </div>
 
-            <div class="timeline-lane rulers-lane">
-              {
-                placedRulers.map((item, index) => (
-                  <article
-                    class="timeline-item rulers"
-                    style={`--top: ${item.top}px; --label-top: ${item.labelTop}px; --range-height: ${item.rangeHeight}px; --delay: ${index * 24}ms`}
-                  >
-                    <span class="range-bar" aria-hidden="true"></span>
-                    <span class="connector" aria-hidden="true"></span>
-                    <div class="entry">
-                      <div class="date">{item.date}</div>
-                      <p class="era">
-                        <span class="lang-en">{item.era.en}</span>
-                        <span class="lang-ru">{item.era.ru}</span>
-                      </p>
-                      <h3>
-                        <span class="lang-en">{item.title.en}</span>
-                        <span class="lang-ru">{item.title.ru}</span>
-                      </h3>
-                      <p>
-                        <span class="lang-en">{item.description.en}</span>
-                        <span class="lang-ru">{item.description.ru}</span>
-                      </p>
-                    </div>
-                  </article>
-                ))
-              }
-            </div>
-
-            <div class="timeline-lane events-lane">
-              {
-                placedEvents.map((item, index) => (
-                  <article
-                    class="timeline-item events"
-                    style={`--top: ${item.top}px; --label-top: ${item.labelTop}px; --range-height: ${item.rangeHeight}px; --delay: ${index * 24}ms`}
-                  >
-                    <span class="range-bar" aria-hidden="true"></span>
-                    <span class="connector" aria-hidden="true"></span>
-                    <div class="entry">
-                      <div class="date">{item.date}</div>
-                      <p class="era">
-                        <span class="lang-en">{item.era.en}</span>
-                        <span class="lang-ru">{item.era.ru}</span>
-                      </p>
-                      <h3>
-                        <span class="lang-en">{item.title.en}</span>
-                        <span class="lang-ru">{item.title.ru}</span>
-                      </h3>
-                      <p>
-                        <span class="lang-en">{item.description.en}</span>
-                        <span class="lang-ru">{item.description.ru}</span>
-                      </p>
-                    </div>
-                  </article>
-                ))
-              }
-            </div>
-          </div>
+              <div class="horizontal-lane events-lane" style={`--lane-height: ${eventLaneHeight}px;`}>
+                <div class="lane-heading">
+                  <span class="label-dot"></span>
+                  <div>
+                    <h2>
+                      <span class="lang-en">Major Events</span>
+                      <span class="lang-ru">Ключевые события</span>
+                    </h2>
+                    <p>
+                      <span class="lang-en">Statehood, war, religion, reform, and collapse</span>
+                      <span class="lang-ru">Государственность, войны, религия, реформы и распад</span>
+                    </p>
+                  </div>
+                </div>
+                {
+                  placedEvents.map((item, index) => (
+                    <article
+                      class:list={["timeline-band", "events", { "align-end": item.alignEnd }]}
+                      style={`--left: ${item.left}px; --row: ${item.row}; --width: ${item.width}px; --delay: ${index * 22}ms`}
+                      tabindex="0"
+                    >
+                      <div class="compact-band">
+                        <span class="date">{item.date}</span>
+                        <strong>
+                          <span class="lang-en">{item.title.en}</span>
+                          <span class="lang-ru">{item.title.ru}</span>
+                        </strong>
+                        <span class="band-summary">
+                          <span class="lang-en">{item.summary.en}</span>
+                          <span class="lang-ru">{item.summary.ru}</span>
+                        </span>
+                        <div class="detail-card">
+                          <p class="era">
+                            <span class="lang-en">{item.era.en}</span>
+                            <span class="lang-ru">{item.era.ru}</span>
+                          </p>
+                          <h3>
+                            <span class="lang-en">{item.title.en}</span>
+                            <span class="lang-ru">{item.title.ru}</span>
+                          </h3>
+                          <p>
+                            <span class="lang-en">{item.description.en}</span>
+                            <span class="lang-ru">{item.description.ru}</span>
+                          </p>
+                        </div>
+                      </div>
+                    </article>
+                  ))
+                }
+              </div>
           </div>
         </div>
       </section>
@@ -342,24 +393,17 @@ const yearMarks = Array.from(
 
       setLanguage(initial);
 
-      const timelineScrollers = Array.from(document.querySelectorAll("[data-timeline-scroll]"));
-      let syncingTimelineScroll = false;
+      const timelineFrame = document.querySelector(".timeline-frame");
+      const rulerTrack = document.querySelector("[data-ruler-track]");
 
-      timelineScrollers.forEach((scroller) => {
-        scroller.addEventListener("scroll", () => {
-          if (syncingTimelineScroll) {
-            return;
-          }
+      if (timelineFrame instanceof HTMLElement && rulerTrack instanceof HTMLElement) {
+        const syncRuler = () => {
+          rulerTrack.style.transform = `translateX(-${timelineFrame.scrollLeft}px)`;
+        };
 
-          syncingTimelineScroll = true;
-          timelineScrollers.forEach((otherScroller) => {
-            if (otherScroller !== scroller) {
-              otherScroller.scrollLeft = scroller.scrollLeft;
-            }
-          });
-          syncingTimelineScroll = false;
-        });
-      });
+        timelineFrame.addEventListener("scroll", syncRuler, { passive: true });
+        syncRuler();
+      }
     </script>
   </body>
 </html>
@@ -633,54 +677,119 @@ const yearMarks = Array.from(
     padding: 24px 0 88px;
   }
 
-  .timeline-head-scroll {
+  .timeline-ruler-viewport {
     position: sticky;
     top: 0;
-    z-index: 5;
-    overflow-x: auto;
-    background: rgba(244, 239, 230, 0.9);
+    z-index: 16;
+    width: 100%;
+    height: 54px;
+    overflow: hidden;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    background: rgba(244, 239, 230, 0.92);
     backdrop-filter: blur(12px);
-    scrollbar-width: none;
   }
 
-  .timeline-head-scroll::-webkit-scrollbar {
-    display: none;
-  }
-
-  .timeline-head-grid {
-    display: grid;
-    grid-template-columns: 78px repeat(2, minmax(0, 1fr));
-    gap: 0 28px;
-    padding: 24px 0 0;
-  }
-
-  .column-head {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
+  .timeline-frame {
+    overflow-x: auto;
     padding: 18px 0;
-    background: transparent;
+    scroll-padding-inline: 18px;
   }
 
-  .axis-head {
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
+  .timeline-frame::-webkit-scrollbar {
+    height: 10px;
+  }
+
+  .timeline-frame::-webkit-scrollbar-thumb {
+    border: 3px solid var(--paper);
+    border-radius: 999px;
+    background: rgba(34, 32, 29, 0.24);
+  }
+
+  .timeline-content {
+    width: var(--content-width);
+    min-width: 980px;
+  }
+
+  .year-ruler {
+    position: relative;
+    height: 54px;
+    width: var(--scale-width);
+    will-change: transform;
+  }
+
+  .year-ruler::before {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    left: 0;
+    height: 1px;
+    background: rgba(34, 32, 29, 0.22);
+    content: "";
+  }
+
+  .year-mark {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--left);
+    width: 1px;
+    background: rgba(34, 32, 29, 0.2);
+  }
+
+  .year-mark span {
+    position: absolute;
+    top: 9px;
+    left: 8px;
+    color: var(--muted);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0;
+  }
+
+  .horizontal-lane {
+    position: relative;
+    height: var(--lane-height);
+    margin-top: 28px;
+    border-top: 1px solid rgba(34, 32, 29, 0.18);
+    border-bottom: 1px solid rgba(34, 32, 29, 0.1);
+  }
+
+  .horizontal-lane::before {
+    position: absolute;
+    top: 70px;
+    right: 0;
+    left: 0;
+    height: 1px;
+    background: rgba(34, 32, 29, 0.16);
+    content: "";
+  }
+
+  .lane-heading {
+    position: absolute;
+    top: 18px;
+    left: 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    width: min(460px, 88vw);
+    padding-right: 24px;
   }
 
   .label-dot {
+    flex: 0 0 auto;
     width: 12px;
     height: 12px;
+    margin-top: 4px;
     border-radius: 50%;
     background: var(--red);
   }
 
-  .events-head .label-dot {
+  .events-lane .label-dot {
     background: var(--blue);
   }
 
-  .column-head h2 {
+  .lane-heading h2 {
     font-family:
       ui-sans-serif,
       system-ui,
@@ -688,147 +797,123 @@ const yearMarks = Array.from(
       BlinkMacSystemFont,
       "Segoe UI",
       sans-serif;
-    font-size: 0.9rem;
+    font-size: 0.86rem;
     font-weight: 800;
     text-transform: uppercase;
   }
 
-  .timeline-scroll {
-    overflow-x: auto;
-    padding-bottom: 10px;
-  }
-
-  .timeline-content {
-    min-width: 760px;
-  }
-
-  .scaled-timeline {
-    position: relative;
-    display: grid;
-    grid-template-columns: 78px repeat(2, minmax(260px, 1fr));
-    gap: 0 28px;
-    min-height: var(--canvas-height);
-    padding-top: 18px;
-  }
-
-  .year-axis {
-    position: relative;
-    min-height: var(--canvas-height);
-  }
-
-  .year-axis::before {
-    position: absolute;
-    top: 0;
-    right: 16px;
-    width: 1px;
-    height: var(--scale-height);
-    background: rgba(34, 32, 29, 0.24);
-    content: "";
-  }
-
-  .year-mark {
-    position: absolute;
-    top: var(--top);
-    right: 0;
-    width: 100%;
-    border-top: 1px solid rgba(34, 32, 29, 0.18);
-  }
-
-  .year-mark span {
-    position: absolute;
-    top: -0.68rem;
-    right: 26px;
+  .lane-heading p {
+    max-width: 36ch;
+    margin: 6px 0 0;
     color: var(--muted);
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    font-size: 0.72rem;
-    letter-spacing: 0;
+    font-size: 0.86rem;
+    line-height: 1.45;
   }
 
-  .timeline-lane {
-    position: relative;
-    min-height: var(--canvas-height);
-    border-top: 1px solid rgba(34, 32, 29, 0.12);
-  }
-
-  .timeline-lane::before {
+  .timeline-band {
     position: absolute;
-    top: 0;
-    left: 10px;
-    width: 1px;
-    height: var(--scale-height);
-    background: rgba(34, 32, 29, 0.16);
-    content: "";
-  }
-
-  .timeline-item {
-    position: absolute;
-    top: var(--top);
-    right: 0;
-    left: 0;
-    min-height: var(--range-height);
+    top: calc(94px + var(--row) * 86px);
+    left: var(--left);
+    z-index: 1;
+    --expanded-width: min(420px, calc(var(--width) + 260px));
+    width: var(--width);
+    min-width: var(--width);
     opacity: 0;
+    outline: none;
     animation: rise-in 540ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
     animation-delay: var(--delay);
   }
 
-  .range-bar {
+  .timeline-band:hover,
+  .timeline-band:focus,
+  .timeline-band:focus-within {
+    z-index: 12;
+  }
+
+  .compact-band {
+    position: relative;
+    display: grid;
+    align-content: center;
+    gap: 2px;
+    width: var(--width);
+    min-height: 66px;
+    max-height: 66px;
+    overflow: hidden;
+    border: 1px solid rgba(159, 53, 44, 0.32);
+    border-radius: 8px;
+    padding: 10px 12px 11px;
+    background: rgba(255, 250, 240, 0.84);
+    box-shadow: 0 10px 24px rgba(50, 42, 31, 0.07);
+    transition:
+      transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 220ms ease,
+      background 220ms ease,
+      max-height 260ms cubic-bezier(0.16, 1, 0.3, 1),
+      width 260ms cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 220ms ease;
+  }
+
+  .compact-band::before {
     position: absolute;
     top: 0;
-    left: 6px;
-    width: 9px;
-    height: var(--range-height);
-    min-height: 8px;
-    border-radius: 999px;
+    right: 0;
+    left: 0;
+    height: 5px;
     background: var(--red);
-    box-shadow: 0 0 0 4px rgba(159, 53, 44, 0.08);
+    content: "";
   }
 
-  .events .range-bar {
+  .events .compact-band {
+    border-color: rgba(36, 73, 92, 0.32);
+  }
+
+  .events .compact-band::before {
     background: var(--blue);
-    box-shadow: 0 0 0 4px rgba(36, 73, 92, 0.08);
   }
 
-  .connector {
-    position: absolute;
-    top: calc(var(--label-top) - var(--top) + 22px);
-    left: 15px;
-    width: 24px;
-    height: 1px;
-    background: rgba(34, 32, 29, 0.22);
+  .timeline-band:hover .compact-band,
+  .timeline-band:focus .compact-band,
+  .timeline-band:focus-within .compact-band {
+    width: var(--expanded-width);
+    max-height: 520px;
+    transform: translateY(-4px) scale(1.02);
+    border-color: rgba(34, 32, 29, 0.34);
+    background: var(--paper-strong);
+    box-shadow: 0 20px 44px rgba(50, 42, 31, 0.16);
+  }
+
+  .align-end:hover .compact-band,
+  .align-end:focus .compact-band,
+  .align-end:focus-within .compact-band {
+    margin-left: calc(var(--width) - var(--expanded-width));
   }
 
   .date {
-    margin-bottom: 8px;
     color: var(--muted);
-    font-size: 0.76rem;
-    line-height: 1.35;
+    font-size: 0.72rem;
+    line-height: 1.25;
+    white-space: nowrap;
   }
 
-  .entry {
-    position: absolute;
-    top: calc(var(--label-top) - var(--top));
-    right: 0;
-    left: 38px;
-    min-height: 124px;
-    border: 1px solid var(--line);
-    border-left: 4px solid var(--red);
-    border-radius: 8px;
-    padding: 13px 16px 16px;
-    background: rgba(255, 250, 240, 0.72);
-    transition:
-      transform 180ms ease,
-      border-color 180ms ease,
-      background 180ms ease;
+  .compact-band strong,
+  .band-summary {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
-  .events .entry {
-    border-left-color: var(--blue);
+  .compact-band strong {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    line-height: 1.1;
   }
 
-  .timeline-item:hover .entry {
-    transform: translateY(-2px);
-    border-color: rgba(34, 32, 29, 0.3);
-    background: var(--paper-strong);
+  .band-summary {
+    color: var(--muted);
+    font-size: 0.72rem;
+    line-height: 1.25;
   }
 
   .era {
@@ -843,12 +928,43 @@ const yearMarks = Array.from(
     color: var(--blue);
   }
 
-  .entry h3 {
+  .detail-card {
+    width: 100%;
+    margin-top: 12px;
+    border: 1px solid rgba(34, 32, 29, 0.18);
+    border-left: 5px solid var(--red);
+    border-radius: 8px;
+    padding: 14px 16px 16px;
+    background: rgba(255, 250, 240, 0.98);
+    box-shadow: 0 18px 42px rgba(50, 42, 31, 0.14);
+    opacity: 0;
+    transform: translateY(-4px);
+    transition:
+      opacity 180ms ease,
+      transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .align-end .detail-card {
+    margin-left: auto;
+  }
+
+  .events .detail-card {
+    border-left-color: var(--blue);
+  }
+
+  .timeline-band:hover .detail-card,
+  .timeline-band:focus .detail-card,
+  .timeline-band:focus-within .detail-card {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .detail-card h3 {
     font-size: clamp(1.12rem, 1.55vw, 1.48rem);
     line-height: 1.1;
   }
 
-  .entry p:last-child {
+  .detail-card p:last-child {
     margin: 12px 0 0;
     color: var(--muted);
     font-size: 0.9rem;
@@ -915,29 +1031,19 @@ const yearMarks = Array.from(
       padding-top: 42px;
     }
 
-    .timeline-head-grid {
-      grid-template-columns: 64px repeat(2, minmax(0, 1fr));
-      gap: 0 20px;
-    }
-
     .timeline-content {
-      min-width: 732px;
-    }
-
-    .scaled-timeline {
-      grid-template-columns: 64px repeat(2, minmax(260px, 1fr));
-      gap: 0 20px;
+      min-width: 860px;
     }
   }
 
   @media (max-width: 520px) {
-    .timeline-head-grid {
-      top: 0;
+    .timeline-content {
+      min-width: 780px;
     }
 
-    .entry {
-      left: 32px;
-      padding: 12px 14px 14px;
+    .detail-card {
+      width: min(340px, calc(var(--width) + 220px));
+      padding: 13px 15px 15px;
     }
   }
 
