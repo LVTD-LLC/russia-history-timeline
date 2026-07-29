@@ -2,7 +2,7 @@
 
 ## 2026-07-29
 
-- Updated ReviewGate to follow the action's `main` branch and use OpenRouter's free-model router.
+- Updated ReviewGate to run the latest CLI from `main` and use OpenRouter's free-model router.
 - Replaced the custom comment-trigger implementation with ReviewGate's least-privilege rereview mode.
 
 ## 2026-07-05

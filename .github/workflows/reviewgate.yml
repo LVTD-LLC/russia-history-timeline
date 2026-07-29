@@ -10,6 +10,7 @@ jobs:
   review:
     if: >-
       ${{
+        github.event_name == 'pull_request' &&
         github.event.pull_request.head.repo.full_name == github.repository &&
         github.actor != 'dependabot[bot]'
       }}
@@ -23,17 +24,94 @@ jobs:
     concurrency:
       group: reviewgate-${{ github.workflow }}-${{ github.event.pull_request.number }}
       cancel-in-progress: true
+    env:
+      REVIEWGATE_ROOT: ${{ runner.temp }}/reviewgate-action
+      REVIEWGATE_CONFIG: .reviewgate.yml
+      REVIEWGATE_MIN_SEVERITY: P4
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
           fetch-depth: 0
           persist-credentials: false
 
-      - uses: LVTD-LLC/reviewgate@main
+      - name: Checkout ReviewGate from main
+        run: git clone --depth 1 --branch main https://github.com/LVTD-LLC/reviewgate "$REVIEWGATE_ROOT"
+
+      - name: Publish ReviewGate start signal
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cargo run --locked --manifest-path "$REVIEWGATE_ROOT/Cargo.toml" \
+            -p reviewgate-cli -- publish-start-signal \
+            --repo "$GITHUB_WORKSPACE"
+
+      - name: Run ReviewGate with OpenRouter free models
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          cargo run --locked --manifest-path "$REVIEWGATE_ROOT/Cargo.toml" \
+            -p reviewgate-cli -- review-pr \
+            --repo "$GITHUB_WORKSPACE" \
+            --config "$REVIEWGATE_CONFIG" \
+            --json-out "$GITHUB_WORKSPACE/.reviewgate/review.json" \
+            --summary-out "$GITHUB_WORKSPACE/.reviewgate/summary.md" \
+            --min-severity "$REVIEWGATE_MIN_SEVERITY" \
+            --model openrouter/free
+
+      - name: Publish ReviewGate findings
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cargo run --locked --manifest-path "$REVIEWGATE_ROOT/Cargo.toml" \
+            -p reviewgate-cli -- publish-findings \
+            --repo "$GITHUB_WORKSPACE" \
+            --input "$GITHUB_WORKSPACE/.reviewgate/review.json" \
+            --min-severity "$REVIEWGATE_MIN_SEVERITY"
+
+      - name: Publish ReviewGate summary
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cargo run --locked --manifest-path "$REVIEWGATE_ROOT/Cargo.toml" \
+            -p reviewgate-cli -- publish-summary \
+            --repo "$GITHUB_WORKSPACE" \
+            --input "$GITHUB_WORKSPACE/.reviewgate/review.json" \
+            --summary-out "$GITHUB_WORKSPACE/.reviewgate/summary.md" \
+            --min-severity "$REVIEWGATE_MIN_SEVERITY"
+
+      - name: Publish ReviewGate check run
+        if: ${{ always() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cargo run --locked --manifest-path "$REVIEWGATE_ROOT/Cargo.toml" \
+            -p reviewgate-cli -- publish-check-run \
+            --repo "$GITHUB_WORKSPACE" \
+            --input "$GITHUB_WORKSPACE/.reviewgate/review.json"
+
+      - name: Publish ReviewGate agent result
+        id: agent-result
+        if: ${{ always() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cargo run --locked --manifest-path "$REVIEWGATE_ROOT/Cargo.toml" \
+            -p reviewgate-cli -- publish-agent-result \
+            --repo "$GITHUB_WORKSPACE" \
+            --input "$GITHUB_WORKSPACE/.reviewgate/review.json" \
+            --output "$GITHUB_WORKSPACE/.reviewgate/result.json"
+
+      - name: Upload ReviewGate agent result
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          openrouter_api_key: ${{ secrets.OPENROUTER_API_KEY }}
-          model: openrouter/free
-          min_severity: P4
+          name: reviewgate-agent-result-${{ steps.agent-result.outputs.reviewed_sha }}
+          path: ${{ github.workspace }}/.reviewgate/result.json
+          if-no-files-found: error
+          retention-days: 14
 
   rereview:
     if: >-
@@ -54,8 +132,17 @@ jobs:
     concurrency:
       group: reviewgate-rereview-${{ github.event.comment.id }}
       cancel-in-progress: false
+    env:
+      REVIEWGATE_ROOT: ${{ runner.temp }}/reviewgate-action
     steps:
-      - uses: LVTD-LLC/reviewgate@main
-        with:
-          mode: rereview
-          review_workflow: reviewgate.yml
+      - name: Checkout ReviewGate from main
+        run: git clone --depth 1 --branch main https://github.com/LVTD-LLC/reviewgate "$REVIEWGATE_ROOT"
+
+      - name: Request ReviewGate rereview
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cargo run --locked --manifest-path "$REVIEWGATE_ROOT/Cargo.toml" \
+            -p reviewgate-cli -- request-rereview \
+            --repo "$GITHUB_WORKSPACE" \
+            --workflow reviewgate.yml
