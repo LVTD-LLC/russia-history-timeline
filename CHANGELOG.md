@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-07-29
+
+- Updated ReviewGate to run the latest CLI from `main` and use OpenRouter's free-model router.
+- Replaced the custom comment-trigger implementation with ReviewGate's least-privilege rereview mode.
+
 ## 2026-07-05
 
 - Replaced the vertical comparison timeline with horizontal proportional lanes for rulers and major events.
