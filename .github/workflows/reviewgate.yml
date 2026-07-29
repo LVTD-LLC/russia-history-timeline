@@ -25,7 +25,6 @@ jobs:
       group: reviewgate-${{ github.workflow }}-${{ github.event.pull_request.number }}
       cancel-in-progress: true
     env:
-      REVIEWGATE_ROOT: ${{ runner.temp }}/reviewgate-action
       REVIEWGATE_CONFIG: .reviewgate.yml
       REVIEWGATE_MIN_SEVERITY: P4
     steps:
@@ -35,14 +34,14 @@ jobs:
           persist-credentials: false
 
       - name: Checkout ReviewGate from main
-        run: git clone --depth 1 --branch main https://github.com/LVTD-LLC/reviewgate "$REVIEWGATE_ROOT"
+        run: git clone --depth 1 --branch main https://github.com/LVTD-LLC/reviewgate "$RUNNER_TEMP/reviewgate-action"
 
       - name: Publish ReviewGate start signal
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          cargo run --locked --manifest-path "$REVIEWGATE_ROOT/Cargo.toml" \
+          cargo run --locked --manifest-path "$RUNNER_TEMP/reviewgate-action/Cargo.toml" \
             -p reviewgate-cli -- publish-start-signal \
             --repo "$GITHUB_WORKSPACE"
 
@@ -51,7 +50,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         run: |
-          cargo run --locked --manifest-path "$REVIEWGATE_ROOT/Cargo.toml" \
+          cargo run --locked --manifest-path "$RUNNER_TEMP/reviewgate-action/Cargo.toml" \
             -p reviewgate-cli -- review-pr \
             --repo "$GITHUB_WORKSPACE" \
             --config "$REVIEWGATE_CONFIG" \
@@ -65,7 +64,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          cargo run --locked --manifest-path "$REVIEWGATE_ROOT/Cargo.toml" \
+          cargo run --locked --manifest-path "$RUNNER_TEMP/reviewgate-action/Cargo.toml" \
             -p reviewgate-cli -- publish-findings \
             --repo "$GITHUB_WORKSPACE" \
             --input "$GITHUB_WORKSPACE/.reviewgate/review.json" \
@@ -75,7 +74,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          cargo run --locked --manifest-path "$REVIEWGATE_ROOT/Cargo.toml" \
+          cargo run --locked --manifest-path "$RUNNER_TEMP/reviewgate-action/Cargo.toml" \
             -p reviewgate-cli -- publish-summary \
             --repo "$GITHUB_WORKSPACE" \
             --input "$GITHUB_WORKSPACE/.reviewgate/review.json" \
@@ -87,7 +86,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          cargo run --locked --manifest-path "$REVIEWGATE_ROOT/Cargo.toml" \
+          cargo run --locked --manifest-path "$RUNNER_TEMP/reviewgate-action/Cargo.toml" \
             -p reviewgate-cli -- publish-check-run \
             --repo "$GITHUB_WORKSPACE" \
             --input "$GITHUB_WORKSPACE/.reviewgate/review.json"
@@ -98,7 +97,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          cargo run --locked --manifest-path "$REVIEWGATE_ROOT/Cargo.toml" \
+          cargo run --locked --manifest-path "$RUNNER_TEMP/reviewgate-action/Cargo.toml" \
             -p reviewgate-cli -- publish-agent-result \
             --repo "$GITHUB_WORKSPACE" \
             --input "$GITHUB_WORKSPACE/.reviewgate/review.json" \
@@ -132,17 +131,15 @@ jobs:
     concurrency:
       group: reviewgate-rereview-${{ github.event.comment.id }}
       cancel-in-progress: false
-    env:
-      REVIEWGATE_ROOT: ${{ runner.temp }}/reviewgate-action
     steps:
       - name: Checkout ReviewGate from main
-        run: git clone --depth 1 --branch main https://github.com/LVTD-LLC/reviewgate "$REVIEWGATE_ROOT"
+        run: git clone --depth 1 --branch main https://github.com/LVTD-LLC/reviewgate "$RUNNER_TEMP/reviewgate-action"
 
       - name: Request ReviewGate rereview
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          cargo run --locked --manifest-path "$REVIEWGATE_ROOT/Cargo.toml" \
+          cargo run --locked --manifest-path "$RUNNER_TEMP/reviewgate-action/Cargo.toml" \
             -p reviewgate-cli -- request-rereview \
             --repo "$GITHUB_WORKSPACE" \
             --workflow reviewgate.yml
