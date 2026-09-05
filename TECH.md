@@ -12,6 +12,7 @@
 ```
 npm install
 npm run dev
+npm run typecheck
 npm run build
 npm run preview
 npm test
@@ -24,7 +25,8 @@ CapRover uses `captain-definition`, which points at `Dockerfile`.
 The Docker build:
 
 1. Installs dependencies with `npm ci`.
-2. Runs `npm run build`.
+2. Runs `npm run typecheck
+npm run build`.
 3. Serves `dist/` from Nginx.
 
 ## Constraints

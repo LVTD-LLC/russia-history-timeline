@@ -7,6 +7,7 @@
 ```sh
 npm ci --include=dev
 npm run dev
+npm run typecheck
 npm run build
 npm run preview
 npx playwright install --with-deps chromium
