@@ -1,4 +1,9 @@
-import { rulers, eras, START_YEAR, END_YEAR } from "../data/timeline";
+import {
+  timeline as items,
+  eras,
+  START_YEAR,
+  END_YEAR,
+} from "../data/timeline";
 
 const element = <T extends HTMLElement>(id: string) =>
   document.getElementById(id) as T;
@@ -61,17 +66,25 @@ function openPreview(index: number, pin = false) {
   if (active >= 0) buttons[active].setAttribute("aria-expanded", "false");
   active = index;
   pinned = pin;
-  const ruler = rulers[index];
+  const ruler = items[index];
   const era = eras.find((e) => e.id === ruler.era)!;
   element("preview-era").textContent = era.name;
   element("preview-dates").textContent = ruler.dates;
   element("preview-name").textContent = ruler.name;
   element("preview-title").textContent = ruler.title;
   element("preview-intro").textContent = ruler.intro;
-  element("preview-count").textContent = `${index + 1} из ${rulers.length}`;
+  element("accession-label").textContent =
+    ruler.kind === "context" ? "Начало периода" : "Приход к власти";
+  element("departure-label").textContent =
+    ruler.kind === "context" ? "Чем завершился" : "Завершение правления";
+  element("preview-accession").textContent = ruler.accession;
+  element("preview-departure").textContent = ruler.departure;
+  document.querySelector(".preview-body")!.scrollTop = 0;
+  element("preview-count").textContent =
+    `Позиция ${index + 1} из ${items.length}`;
   element<HTMLButtonElement>("previous-ruler").disabled = index === 0;
   element<HTMLButtonElement>("next-ruler").disabled =
-    index === rulers.length - 1;
+    index === items.length - 1;
   preview.style.setProperty("--preview-color", era.color);
   buttons[index].setAttribute("aria-expanded", "true");
   preview.hidden = false;
@@ -143,7 +156,7 @@ function updateScale(
   updateView();
 }
 function goToRuler(index: number) {
-  const ruler = rulers[index];
+  const ruler = items[index];
   if (!ruler) return;
   // Keep short reigns selectable without magnifying the whole history automatically.
   viewport.scrollTo({
@@ -175,7 +188,7 @@ buttons.forEach((button, index) => {
       const next = clamp(
         index + (event.key === "ArrowRight" ? 1 : -1),
         0,
-        rulers.length - 1,
+        items.length - 1,
       );
       buttons[next].focus({ preventScroll: true });
       goToRuler(next);
@@ -234,7 +247,7 @@ position.addEventListener("input", () => {
   updateView();
 });
 picker.addEventListener("change", () => {
-  const index = rulers.findIndex((r) => r.id === picker.value);
+  const index = items.findIndex((r) => r.id === picker.value);
   if (index >= 0) goToRuler(index);
 });
 eraButtons.forEach((button) =>

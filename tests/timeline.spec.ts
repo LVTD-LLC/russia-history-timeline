@@ -10,7 +10,7 @@ test("Russian-only, one lane, no document overflow", async ({ page }) => {
     page.getByRole("heading", { name: "Правители России", exact: true }),
   ).toBeVisible();
   await expect(page.locator(".ruler-line")).toHaveCount(1);
-  await expect(page.locator("[data-ruler]")).toHaveCount(67);
+  await expect(page.locator("[data-ruler]")).toHaveCount(84);
   await expect(page.locator("body")).not.toContainText("English");
   expect(
     await page.evaluate(

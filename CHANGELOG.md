@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-05 — Succession and chronology context
+
+- Filled 1132–1155 with 12 Kiev reign segments, including repeated accessions and co-rule.
+- Added five hatched context periods to explain every remaining date gap without creating an events lane.
+- Added accession and departure explanations for all 79 reign entries, distinguishing inheritance, coups, abdication, death, and changes of office or political center.
+- Kept the expanded preview scrollable with close and navigation controls visible on phones.
+- Added continuity and succession interaction coverage, plus editorial source notes.
+
 ## 2026-09-05
 
 - Replaced the bilingual rulers/events view with a Russian-only, single horizontal ruler timeline.

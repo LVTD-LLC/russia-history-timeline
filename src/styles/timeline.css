@@ -912,3 +912,60 @@ summary {
     transition: none !important;
   }
 }
+
+/* Context occupies the same time-proportional lane, but is not presented as a ruler. */
+.ruler.context-period {
+  background: repeating-linear-gradient(135deg, #f1eee5 0 6px, #e8e3d7 6px 7px);
+  border-left-style: dashed;
+  --era-color: #756c5c;
+}
+.ruler.context-period:hover,
+.ruler.context-period[aria-expanded="true"] {
+  background: repeating-linear-gradient(135deg, #e7e0d1 0 6px, #d7cebb 6px 7px);
+}
+.context-period .ruler-name {
+  font-size: 15px;
+}
+.ruler-preview {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.preview-top,
+.preview-bottom {
+  flex: none;
+}
+.preview-body {
+  overflow-y: auto;
+  min-height: 0;
+  overscroll-behavior: contain;
+  padding-right: 4px;
+}
+.succession {
+  border-top: 1px solid var(--border);
+  margin: 0 0 15px;
+  padding-top: 13px;
+}
+.succession dt {
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+.succession dd {
+  margin: 0 0 15px;
+  font-size: 12px;
+  line-height: 1.65;
+}
+.succession dd:last-child {
+  margin-bottom: 0;
+}
+@media (max-width: 640px) {
+  .ruler-preview {
+    max-height: 70dvh;
+  }
+  .succession dd {
+    font-size: 13px;
+  }
+}
