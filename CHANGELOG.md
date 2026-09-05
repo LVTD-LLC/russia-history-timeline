@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-05 — Artwork previews and major events
+
+- Added two attributed artwork previews per painter (72 local, optimized reproductions), with creation dates and source links.
+- Added 33 major historical events between ruler and painter timelines, sharing scrolling and all eight zoom levels.
+- Linked event cards to rulers and relevant works; distinguished contemporary responses, later depictions and social context.
+- Preserved selectable short events, scrollable mobile cards, accessible source links and empty-state explanations.
+
 ## 2026-09-05 — Painters alongside rulers
 
 - Added 36 Russian-language painter biographies, lifespan bars, a painter picker and period shortcuts.

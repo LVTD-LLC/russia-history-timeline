@@ -51,3 +51,23 @@ The 36 entries are a curated selection, not a complete roster. Numeric ranges re
 - [Thyssen-Bornemisza: Chagall biography](https://www.museothyssen.org/en/collection/artists/chagall-marc), [MoMA: Chagall](https://www.moma.org/artists/1055-marc-chagall).
 - [Russian Museum: Plastov](https://rusmuseum.ru/exhibitions/archive/arkady-plastov-soil-and-fate/), [Pimenov](https://rusmuseumvrm.ru/reference/classifier/author/pimenov_yuriy_ivanovich/index.php?lang=ru&p=0&page=1&ps=500), [Korzhev](https://www.rmgallery.rusmuseumvrm.ru/ru/2378).
 - General collection references for nineteenth-century biographies and works: [Tretyakov Gallery collection](https://my.tretyakov.ru/), [Russian Museum collection](https://rusmuseumvrm.ru/).
+
+## Major events and artwork previews (2026-09-05)
+
+`src/data/artworks.json` records title, creation date, image source, credit and rights label for every preview. These are faithful, reduced-size JPEG reproductions, not generated paintings. Public-domain and Creative Commons labels reproduce the source repository's metadata; other previews retain author/rightsholder credit and are not represented as openly licensed. Artist identities and individual works were checked using source descriptions and a visual contact sheet. Some museum photographs include frames. All 72 thumbnails are served locally; source links lead to the full record.
+
+Events are selective, with numerical year fractions for within-year positioning, not day-level precision. A dot marks an event shorter than a year; a duration line preserves elapsed years while a readable label can extend beyond it. Gregorian dates are used for modern day-level labels, with old-style revolutionary names explained. The full Second World War (1939–1945) is distinct from the Soviet-German war (1941–1945). Civil-war and Cold-war periodization is explicitly qualified. Empty areas are gaps in this selection, not an assertion that nothing occurred.
+
+Historical and artwork cross-checks:
+- [US Holocaust Memorial Museum: Russian Revolution, 1917](https://encyclopedia.ushmm.org/content/en/article/the-russian-revolution-1917).
+- [Imperial War Museums: Second World War galleries guide](https://www.iwm.org.uk/sites/default/files/files/2023-10/second_world_war_galleries_large_print.pdf).
+- [Tretyakov Gallery: Morning of the Streltsy Execution](https://my.tretyakov.ru/app/masterpiece/8414): depicted event 1698; painting 1881.
+- [Tretyakov Gallery: ten paintings by Surikov](https://museum.tretyakov.ru/publications/10-kartin-surikova/): historical subjects and their later interpretation.
+- [MoMA: Goncharova, Angels and Airplanes, 1914](https://www.moma.org/collection/works/95054), [Tretyakov record](https://my.tretyakov.ru/app/masterpiece/50332): lithograph responding to WWI, not an eyewitness battle scene.
+- [Culture.ru: 1918 in Petrograd](https://ar.culture.ru/ru/subject/1918-god-v-petrograde-1): post-revolutionary daily life, painted in 1920.
+- [Russian Museum: Defence of Sevastopol, 1942](https://www.rmgallery.rusmuseumvrm.ru/ru/992): generalized wartime composition.
+- [Tretyakov Gallery: artworks about WWII](https://lavrus.tretyakov.ru/publications/7-shedevrov-o-pobede/), [Russian Museum: Plastov's wartime paintings](https://rusmuseumvrm.ru/data/events/2017/05/lekciya__arkadiy_plastov_kartini_voennih_let/index.php).
+- [Russian Museum: Korzhev, Traces of War](https://rusmuseumvrm.ru/data/collections/painting/19_20/zh_8611/index.php): museum catalogue date 1965, used in preference to differing dates on derivative image records.
+- [Tretyakov Gallery: New Moscow](https://my.tretyakov.ru/app/masterpiece/39092), [ten paintings by Pimenov](https://museum.tretyakov.ru/publications/10-kartin-pimenova/): 1937 image of urban modernity, not a comprehensive account of Stalinism.
+
+Art relationships are editorial explanations grounded in depicted subjects and dates. A contemporary's work is not automatically an illustration of every event in their lifetime. Where no verified relationship is included, the event card says so. Ruler links are temporal intersections, not claims that a ruler participated personally or governed every location involved.

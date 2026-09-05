@@ -1,6 +1,7 @@
 ---
 import { rulers, timeline, eras, START_YEAR, END_YEAR } from "../data/timeline";
 import { painters } from "../data/painters";
+import { events } from "../data/events";
 import "../styles/timeline.css";
 const scale = 8;
 const ticks = Array.from(
@@ -16,7 +17,7 @@ const ticks = Array.from(
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Правители России и известные художники на общей шкале времени. Сравнивайте эпохи, меняйте масштаб и узнавайте о современниках."
+      content="Правители России, важнейшие события и известные художники на общей шкале времени. Сравнивайте эпохи, меняйте масштаб и узнавайте о современниках."
     />
     <meta name="theme-color" content="#f6f3ec" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -38,8 +39,8 @@ const ticks = Array.from(
           </p>
           <h1 id="page-title">Правители <em>России</em></h1>
           <p class="lead">
-            Власть и живопись на одной шкале времени.<br />Узнайте, кто жил в
-            одну эпоху.
+            Власть, события и живопись на одной шкале времени.<br />Узнайте, кто
+            жил в одну эпоху.
           </p>
         </div>
         <figure class="historical-image">
@@ -199,6 +200,91 @@ const ticks = Array.from(
             </div>
           </div>
         </div>
+        <section class="events-section" aria-labelledby="events-heading">
+          <div class="painters-heading">
+            <div>
+              <p class="eyebrow">ПЕРЕЛОМНЫЕ МОМЕНТЫ</p><h2 id="events-heading">
+                События
+              </h2><p>Войны, революции и реформы на общей шкале.</p>
+            </div><label class="ruler-picker"
+              ><span>Найти событие</span><select id="event-picker"
+                ><option value="">Выберите событие</option>{
+                  events.map((e) => (
+                    <option value={e.id}>
+                      {e.name} · {e.dates}
+                    </option>
+                  ))
+                }</select
+              ></label
+            >
+          </div>
+          <div class="painter-shortcuts">
+            <span id="event-count"></span><button
+              type="button"
+              data-event-year="1812">1812</button
+            ><button type="button" data-event-year="1917">Революции</button
+            ><button type="button" data-event-year="1939">Мировая война</button>
+          </div>
+          <p id="events-empty" class="painters-empty" hidden>
+            В этих годах нет событий из подборки. Выберите событие или другую
+            эпоху.
+          </p>
+          <div
+            id="events-timeline"
+            class="timeline-viewport events-viewport"
+            role="region"
+            tabindex="0"
+            aria-label="Исторические события. Общая горизонтальная прокрутка с правителями и художниками."
+          >
+            <div
+              id="events-track"
+              class="timeline-track events-track"
+              style={`--scale:${scale}px;--years:${END_YEAR - START_YEAR}`}
+            >
+              <div class="painter-axis" aria-hidden="true">
+                {
+                  ticks.map((year) => (
+                    <span
+                      class="year-tick"
+                      data-year={year}
+                      style={`left:calc((${year} - ${START_YEAR}) * var(--scale))`}
+                    >
+                      <span>{year}</span>
+                    </span>
+                  ))
+                }
+              </div>
+              {
+                events.map((e) => (
+                  <button
+                    type="button"
+                    class="historical-event"
+                    data-event={e.id}
+                    aria-label={`${e.name}, ${e.dates}. Открыть справку`}
+                    aria-expanded="false"
+                    aria-controls="ruler-preview"
+                    style={`left:calc((${e.start} - ${START_YEAR}) * var(--scale))`}
+                  >
+                    <>
+                      <span class="event-duration" aria-hidden="true" />
+                      <span class="event-label">
+                        <>
+                          <strong>{e.name}</strong>
+                          <span>{e.dates}</span>
+                        </>
+                      </span>
+                    </>
+                  </button>
+                ))
+              }
+            </div>
+          </div>
+          <p class="painter-note">
+            Точка отмечает дату, цветная полоса — длительность. Подпись может
+            быть шире события. Листайте вниз внутри линии, чтобы увидеть
+            совпадающие события. Это выборочная подборка, не полная хроника.
+          </p>
+        </section>
         <section class="painters-section" aria-labelledby="painters-heading">
           <div class="painters-heading">
             <div>
@@ -369,13 +455,31 @@ const ticks = Array.from(
                 href="https://bigenc.ru/c/iziaslav-mstislavich-umer-1154-1d48af"
                 target="_blank"
                 rel="noreferrer">Изяслав Мстиславич · БРЭ</a
-              >. Тексты справок — краткое редакционное изложение.
+              >. Тексты справок — краткое редакционное изложение. <a
+                href="/artworks/CREDITS.txt"
+                target="_blank"
+                rel="noreferrer">Источники репродукций</a
+              >. Даты под картинами — время их создания, а не обязательно время
+              изображённых событий.
             </p>
           </details>
         </div>
       </footer>
       <noscript
         ><section class="no-script">
+          <h2>События</h2>{
+            events.map((e) => (
+              <details>
+                <>
+                  <summary>
+                    {e.name} · {e.dates}
+                  </summary>
+                  <p>{e.intro}</p>
+                  <p>{e.outcome}</p>
+                </>
+              </details>
+            ))
+          }
           <h2>Художники</h2>{
             painters.map((p) => (
               <details>
@@ -447,7 +551,12 @@ const ticks = Array.from(
         <p id="preview-dates"></p><h2 id="preview-name"></h2><p
           id="preview-title"
         >
-        </p><p id="preview-intro"></p><dl class="succession">
+        </p><section
+          id="artwork-gallery"
+          aria-label="Произведения искусства"
+          hidden
+        >
+        </section><p id="preview-intro"></p><dl class="succession">
           <dt id="accession-label">Приход к власти</dt><dd
             id="preview-accession"
           >
@@ -464,6 +573,12 @@ const ticks = Array.from(
             работы при дворе. Внутри одного года и при приблизительных датах
             возможны неточности.
           </p><div id="contemporary-links"></div>
+        </details>
+        <details id="related-events" hidden>
+          <summary id="related-events-label">События и искусство</summary><div
+            id="event-links"
+          >
+          </div>
         </details>
       </div>
       <div class="preview-bottom">
