@@ -1,5 +1,5 @@
 ---
-import { rulers, eras, START_YEAR, END_YEAR } from "../data/timeline";
+import { rulers, timeline, eras, START_YEAR, END_YEAR } from "../data/timeline";
 import "../styles/timeline.css";
 const scale = 8;
 const ticks = Array.from(
@@ -56,7 +56,8 @@ const ticks = Array.from(
       <section class="atlas" aria-label="Интерактивная линия правителей">
         <div class="atlas-topline">
           <h2>Линия правителей</h2><span
-            >{rulers.length} правлений <span class="separator">/</span> 6 эпох</span>
+            >{rulers.length} правлений <span class="separator">/</span> 6 эпох</span
+          >
         </div>
         <nav class="era-nav" aria-label="Перейти к эпохе">
           {
@@ -78,13 +79,15 @@ const ticks = Array.from(
         <div class="toolbar">
           <div class="range-heading">
             <span class="eyebrow">В ПОЛЕ ЗРЕНИЯ</span><output id="visible-years"
-              >862 — 962</output>
+              >862 — 962</output
+            >
           </div>
           <label class="ruler-picker"
             ><span>Найти правителя</span><select id="ruler-picker"
               ><option value="">Выберите имя</option>{
-                rulers.map((r) => (
+                timeline.map((r) => (
                   <option value={r.id}>
+                    {r.kind === "context" ? "Период: " : ""}
                     {r.name} · {r.dates}
                   </option>
                 ))
@@ -94,7 +97,8 @@ const ticks = Array.from(
           <div class="zoom-control">
             <div class="zoom-label">
               <label for="zoom">Масштаб</label><output id="scale-label"
-                >×4</output>
+                >×4</output
+              >
             </div>
             <div class="zoom-input">
               <button id="zoom-out" type="button" aria-label="Уменьшить масштаб"
@@ -110,7 +114,8 @@ const ticks = Array.from(
               /><button
                 id="zoom-in"
                 type="button"
-                aria-label="Увеличить масштаб">+</button>
+                aria-label="Увеличить масштаб">+</button
+              >
             </div>
           </div>
         </div>
@@ -146,18 +151,22 @@ const ticks = Array.from(
             </div>
             <div class="ruler-line" aria-label="Правления">
               {
-                rulers.map((ruler, index) => {
+                timeline.map((ruler, index) => {
                   const era = eras.find((e) => e.id === ruler.era)!;
                   const visualEnd = Math.min(
                     ruler.end,
-                    rulers[index + 1]?.start ?? END_YEAR,
+                    timeline[index + 1]?.start ?? END_YEAR,
                   );
                   return (
                     <button
                       type="button"
-                      class="ruler"
+                      class:list={[
+                        "ruler",
+                        { "context-period": ruler.kind === "context" },
+                      ]}
                       id={ruler.id}
                       data-ruler={ruler.id}
+                      data-kind={ruler.kind}
                       data-start={ruler.start}
                       data-span={visualEnd - ruler.start}
                       aria-label={`${ruler.name}, ${ruler.dates}. Открыть краткую справку`}
@@ -194,17 +203,19 @@ const ticks = Array.from(
             <span aria-hidden="true">↔</span> Листайте по горизонтали. <span
               class="desktop-help">Наведите на правителя — узнайте больше.</span
             ><span class="touch-help"
-              >Нажмите на правителя — узнайте больше.</span>
+              >Нажмите на правителя — узнайте больше.</span
+            >
           </p><div class="step-controls">
             <button type="button" id="pan-back" aria-label="Раньше">←</button
-            ><button type="button" id="pan-forward" aria-label="Позже"
-              >→</button>
+            ><button type="button" id="pan-forward" aria-label="Позже">→</button
+            >
           </div>
         </div>
         <div class="overview">
           <div class="overview-label">
             <label for="position">Вся история</label><span
-              >862 — {new Date().getFullYear()}</span>
+              >862 — {new Date().getFullYear()}</span
+            >
           </div>
           <div class="overview-map" aria-hidden="true">
             {
@@ -228,6 +239,8 @@ const ticks = Array.from(
         <span class="footer-monogram" aria-hidden="true">Р</span><div>
           <p>История не всегда движется по прямой.</p><p class="editorial-note">
             До возвышения Москвы показаны основные князья, а не все претенденты.
+            Штрихованные отрезки объясняют смену князей, междуцарствие или
+            переход к другому центру власти. Это не годы без правителей.
             Перерывы и соправление поясняются в справках. В 1991 году
             руководства СССР и РСФСР существовали одновременно. Длина отрезка
             передаёт время, а не значение правителя.
@@ -247,6 +260,14 @@ const ticks = Array.from(
                 href="https://www.britannica.com/place/Russia/History"
                 target="_blank"
                 rel="noreferrer">История России · Британника</a
+              >, <a
+                href="https://litopys.org.ua/litop/kniazi.htm"
+                target="_blank"
+                rel="noreferrer">Киевские князья · указатель к летописи</a
+              >, <a
+                href="https://bigenc.ru/c/iziaslav-mstislavich-umer-1154-1d48af"
+                target="_blank"
+                rel="noreferrer">Изяслав Мстиславич · БРЭ</a
               >. Тексты справок — краткое редакционное изложение.
             </p>
           </details>
@@ -258,13 +279,32 @@ const ticks = Array.from(
             Для изменения масштаба включите JavaScript. Все справки доступны
             ниже.
           </p>{
-            rulers.map((r) => (
+            timeline.map((r) => (
               <details>
                 <>
                   <summary>
+                    {r.kind === "context" ? "Период: " : ""}
                     {r.name} · {r.dates}
                   </summary>
-                  <p>{r.intro}</p>
+                  <>
+                    <p>{r.intro}</p>
+                    <dl class="succession">
+                      <>
+                        <dt>
+                          {r.kind === "context"
+                            ? "Начало периода"
+                            : "Приход к власти"}
+                        </dt>
+                        <dd>{r.accession}</dd>
+                        <dt>
+                          {r.kind === "context"
+                            ? "Чем завершился"
+                            : "Завершение правления"}
+                        </dt>
+                        <dd>{r.departure}</dd>
+                      </>
+                    </dl>
+                  </>
                 </>
               </details>
             ))
@@ -285,12 +325,23 @@ const ticks = Array.from(
         <span id="preview-era" class="eyebrow"></span><button
           type="button"
           id="close-preview"
-          aria-label="Закрыть справку">×</button>
+          aria-label="Закрыть справку">×</button
+        >
       </div>
-      <p id="preview-dates"></p><h2 id="preview-name"></h2><p
-        id="preview-title"
-      >
-      </p><p id="preview-intro"></p>
+      <div class="preview-body">
+        <p id="preview-dates"></p><h2 id="preview-name"></h2><p
+          id="preview-title"
+        >
+        </p><p id="preview-intro"></p><dl class="succession">
+          <dt id="accession-label">Приход к власти</dt><dd
+            id="preview-accession"
+          >
+          </dd><dt id="departure-label">Завершение правления</dt><dd
+            id="preview-departure"
+          >
+          </dd>
+        </dl>
+      </div>
       <div class="preview-bottom">
         <span id="preview-count"></span><div>
           <button
@@ -300,7 +351,8 @@ const ticks = Array.from(
           ><button
             type="button"
             id="next-ruler"
-            aria-label="Следующий правитель">→</button>
+            aria-label="Следующий правитель">→</button
+          >
         </div>
       </div>
     </section>
