@@ -1,26 +1,36 @@
-# Russia History Timeline
+# Правители России
 
-A bilingual Astro site showing Russian history from early Slavic and Rus' origins through the present day.
+Русскоязычный исторический атлас: одна горизонтальная линия правителей от Рюрика до наших дней, без отдельной ленты событий.
 
-The first screen is the product: a side-by-side historical timeline with rulers on one side and major events on the other, switchable between English and Russian.
-
-## Commands
+## Разработка
 
 ```sh
-npm install
+npm ci --include=dev
 npm run dev
+npm run typecheck
 npm run build
 npm run preview
+npx playwright install --with-deps chromium
+npm test
 ```
 
-## Stack
+## Возможности
 
-- Astro 7
-- Static HTML/CSS with a small language-toggle script
-- Docker + CapRover deployment via `captain-definition`
+- Пропорциональная временная шкала с восемью уровнями масштаба.
+- Переход к эпохе, выбор правителя и обзор всей истории.
+- Краткие справки по наведению, фокусу или нажатию; на телефоне — нижняя карточка.
+- Горизонтальная прокрутка касанием и трекпадом, кнопки навигации и клавиатура.
+- Без клиентского фреймворка и внешних шрифтов. Справки доступны и без JavaScript.
 
-## Content Notes
+## Структура
 
-Timeline copy is intentionally concise. Expand entries in `src/data/timeline.ts` rather than editing rendered markup directly.
+- `src/data/timeline.ts` — правители, даты и эпохи.
+- `src/pages/index.astro` — разметка страницы.
+- `src/styles/timeline.css` — адаптивный дизайн.
+- `src/scripts/timeline.ts` — масштаб, навигация и карточки.
+- `tests/timeline.spec.ts` — проверки взаимодействий на экранах 1440, 390 и 320 пикселей.
 
-Hero image: `public/varangians.jpg`, a public-domain Wikimedia Commons reproduction of *Calling of the Varangians*.
+Ранняя история представлена выборочно. Перерывы, соправление и особенности советского руководства поясняются в справках и примечании. Доли года используются для приблизительного размещения коротких правлений; отображаемые даты заданы отдельно. Современные сведения проверены в сентябре 2026 года.
+
+Astro 7 · статический HTML/CSS/TypeScript · Docker и CapRover через `captain-definition`.
+Иллюстрация: В. М. Васнецов, «Призвание варягов», общественное достояние, Wikimedia Commons.

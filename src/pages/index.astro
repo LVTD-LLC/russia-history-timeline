@@ -1,1060 +1,311 @@
 ---
-import { events, rulers, type TimelineItem } from "../data/timeline";
-
-const TIMELINE_START_YEAR = 500;
-const TIMELINE_END_YEAR = new Date().getFullYear();
-const YEAR_SCALE_PX = 2.7;
-const BAND_ROW_HEIGHT_PX = 86;
-const BAND_ROW_GAP_PX = 16;
-const LANE_PADDING_PX = 330;
-const MIN_RULER_BAND_WIDTH_PX = 132;
-const MIN_EVENT_BAND_WIDTH_PX = 112;
-const TIMELINE_SCALE_WIDTH = Math.round((TIMELINE_END_YEAR - TIMELINE_START_YEAR) * YEAR_SCALE_PX);
-
-type TimelineLane = "rulers" | "events";
-
-type PlacedTimelineItem = TimelineItem & {
-  alignEnd: boolean;
-  endYear: number;
-  left: number;
-  row: number;
-  startYear: number;
-  summary: {
-    en: string;
-    ru: string;
-  };
-  width: number;
-};
-
-function parseYearToken(token: string | undefined, isRangeEnd = false) {
-  if (!token) {
-    return undefined;
-  }
-
-  const normalized = token.trim().toLowerCase();
-  if (normalized.includes("present")) {
-    return TIMELINE_END_YEAR;
-  }
-
-  const match = normalized.match(/\d{3,4}/);
-  if (!match) {
-    return undefined;
-  }
-
-  const year = Number(match[0]);
-  return isRangeEnd && /\d{3,4}s\b/.test(normalized) ? year + 9 : year;
-}
-
-function getYearRange(date: string) {
-  const parts = date.replace(/^c\.\s*/i, "").split("-");
-  const startYear = parseYearToken(parts[0]) ?? TIMELINE_START_YEAR;
-  const endYear = parseYearToken(parts[1], true) ?? startYear;
-
-  return {
-    startYear: Math.max(TIMELINE_START_YEAR, startYear),
-    endYear: Math.min(TIMELINE_END_YEAR, Math.max(startYear, endYear)),
-  };
-}
-
-function getShortDescription(text: string) {
-  const firstSentence = text.split(/(?<=[.!?])\s+/)[0] ?? text;
-
-  if (firstSentence.length <= 92) {
-    return firstSentence;
-  }
-
-  return `${firstSentence.slice(0, 89).trim()}...`;
-}
-
-function placeTimelineItems(items: TimelineItem[], lane: TimelineLane): PlacedTimelineItem[] {
-  const rowEnds: number[] = [];
-
-  return items
-    .map((item) => {
-      const { startYear, endYear } = getYearRange(item.date);
-
-      return {
-        item,
-        endYear,
-        startYear,
-      };
-    })
-    .sort((first, second) => first.startYear - second.startYear || first.endYear - second.endYear)
-    .map(({ item, startYear, endYear }) => {
-      const left = Math.round((startYear - TIMELINE_START_YEAR) * YEAR_SCALE_PX);
-      const proportionalWidth = Math.round(Math.max(endYear - startYear, 1) * YEAR_SCALE_PX);
-      const minWidth = lane === "rulers" ? MIN_RULER_BAND_WIDTH_PX : MIN_EVENT_BAND_WIDTH_PX;
-      const width = Math.max(proportionalWidth, minWidth);
-      const row = rowEnds.findIndex((rowEnd) => rowEnd <= left);
-      const resolvedRow = row === -1 ? rowEnds.length : row;
-      rowEnds[resolvedRow] = left + width + BAND_ROW_GAP_PX;
-
-      return {
-        ...item,
-        alignEnd: left > TIMELINE_SCALE_WIDTH - 520,
-        endYear,
-        left,
-        row: resolvedRow,
-        startYear,
-        summary: {
-          en: getShortDescription(item.description.en),
-          ru: getShortDescription(item.description.ru),
-        },
-        width,
-      };
-    });
-}
-
-const placedRulers = placeTimelineItems(rulers, "rulers");
-const placedEvents = placeTimelineItems(events, "events");
-const timelineContentWidth = Math.max(
-  TIMELINE_SCALE_WIDTH,
-  ...[...placedRulers, ...placedEvents].map((item) => item.left + item.width),
-) + 24;
-const rulerRowCount = Math.max(...placedRulers.map((item) => item.row), 0) + 1;
-const eventRowCount = Math.max(...placedEvents.map((item) => item.row), 0) + 1;
-const rulerLaneHeight = rulerRowCount * BAND_ROW_HEIGHT_PX + LANE_PADDING_PX;
-const eventLaneHeight = eventRowCount * BAND_ROW_HEIGHT_PX + LANE_PADDING_PX;
-const yearMarks = Array.from(
-  { length: Math.floor((TIMELINE_END_YEAR - TIMELINE_START_YEAR) / 100) + 1 },
-  (_, index) => TIMELINE_START_YEAR + index * 100,
-).concat((TIMELINE_END_YEAR - TIMELINE_START_YEAR) % 100 === 0 ? [] : [TIMELINE_END_YEAR]);
+import { rulers, eras, START_YEAR, END_YEAR } from "../data/timeline";
+import "../styles/timeline.css";
+const scale = 8;
+const ticks = Array.from(
+  { length: Math.floor((END_YEAR - 860) / 5) + 1 },
+  (_, i) => 860 + i * 5,
+).filter((y) => y >= START_YEAR);
 ---
 
 <!doctype html>
-<html lang="en" data-lang="en">
+<html lang="ru">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="generator" content={Astro.generator} />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="A bilingual side-by-side timeline of Russian history, with rulers and major events from early Slavic origins to the present."
+      content="Правители Руси и России: одна интерактивная линия времени от Рюрика до наших дней. Меняйте масштаб и знакомьтесь с историей каждого правления."
     />
-    <script is:inline>
-      (() => {
-        try {
-          const stored = localStorage.getItem("timeline-language");
-          const initial = stored === "ru" ? "ru" : "en";
-          document.documentElement.dataset.lang = initial;
-          document.documentElement.lang = initial;
-        } catch {
-          document.documentElement.dataset.lang = "en";
-          document.documentElement.lang = "en";
-        }
-      })();
-    </script>
-    <title>Russia History Timeline</title>
+    <meta name="theme-color" content="#f6f3ec" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Правители России — линия времени</title>
   </head>
   <body>
-    <header class="hero">
-      <nav class="topbar" aria-label="Language">
-        <a class="brand" href="/" aria-label="Russia History Timeline">
-          <span>RHT</span>
-        </a>
-        <div class="language-toggle" role="group" aria-label="Language switcher">
-          <button type="button" data-set-lang="en" aria-pressed="true">EN</button>
-          <button type="button" data-set-lang="ru" aria-pressed="false">RU</button>
-        </div>
-        <script is:inline>
-          (() => {
-            const lang = document.documentElement.dataset.lang === "ru" ? "ru" : "en";
-            document.querySelectorAll("[data-set-lang]").forEach((button) => {
-              button.setAttribute("aria-pressed", String(button.dataset.setLang === lang));
-            });
-          })();
-        </script>
-      </nav>
-
-      <div class="hero-grid">
-        <div class="hero-copy">
+    <a class="skip-link" href="#timeline">К линии времени</a>
+    <header class="masthead">
+      <a class="brand" href="/" aria-label="Правители России — главная"
+        ><span class="brand-mark" aria-hidden="true">Р</span> ИСТОРИЧЕСКИЙ АТЛАС</a
+      >
+      <span class="edition">ОТ РЮРИКА ДО НАШИХ ДНЕЙ</span>
+    </header>
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <div class="intro-copy">
           <p class="eyebrow">
-            <span class="lang-en">Origins to present</span>
-            <span class="lang-ru">От истоков до современности</span>
+            <span></span> 862 — {new Date().getFullYear()} · ЛЮДИ И ВЛАСТЬ
           </p>
-          <h1>
-            <span class="lang-en">History of Russia, before and after the name.</span>
-            <span class="lang-ru">История России: до имени и после него.</span>
-          </h1>
-          <p class="lede">
-            <span class="lang-en">
-              Two parallel timelines: rulers and major events, from early Slavic worlds and Rus' trade routes to the Russian Federation.
-            </span>
-            <span class="lang-ru">
-              Две параллельные линии времени: правители и ключевые события, от ранних славянских миров и путей Руси до Российской Федерации.
-            </span>
+          <h1 id="page-title">Правители <em>России</em></h1>
+          <p class="lead">
+            Одна линия. Больше тысячи лет.<br />Люди, которые меняли ход
+            истории.
           </p>
-          <div class="stats" aria-label="Timeline summary">
-            <div>
-              <strong>{rulers.length}</strong>
-              <span>
-                <span class="lang-en">ruler entries</span>
-                <span class="lang-ru">записей о правителях</span>
-              </span>
-            </div>
-            <div>
-              <strong>{events.length}</strong>
-              <span>
-                <span class="lang-en">event entries</span>
-                <span class="lang-ru">событий</span>
-              </span>
-            </div>
-          </div>
         </div>
-
-        <figure class="hero-media">
+        <figure class="historical-image">
           <img
             src="/varangians.jpg"
-            alt="Public-domain historical painting of the calling of the Varangians"
-            loading="eager"
+            alt="Виктор Васнецов. Призвание варягов: встреча князя и посланников"
+            width="600"
+            height="300"
+            fetchpriority="high"
           />
-          <figcaption>
-            <span class="lang-en">Calling of the Varangians, public-domain reproduction via Wikimedia Commons.</span>
-            <span class="lang-ru">Призвание варягов, репродукция общественного достояния через Wikimedia Commons.</span>
-          </figcaption>
+          <figcaption>В. М. Васнецов · «Призвание варягов»</figcaption>
         </figure>
-      </div>
-    </header>
-
-    <main>
-      <section class="intro" aria-labelledby="timeline-title">
-        <div>
-          <p class="eyebrow">
-            <span class="lang-en">Parallel scan</span>
-            <span class="lang-ru">Параллельный обзор</span>
-          </p>
-          <h2 id="timeline-title">
-            <span class="lang-en">Rulers beside the moments that changed the region.</span>
-            <span class="lang-ru">Правители рядом с событиями, изменившими регион.</span>
-          </h2>
-        </div>
-        <p>
-          <span class="lang-en">
-            The upper track follows authority: tribes, princes, tsars, emperors, Soviet leaders, and presidents. The lower track follows turning points in statehood, war, religion, reform, and collapse.
-          </span>
-          <span class="lang-ru">
-            Верхняя линия показывает власть: племена, князей, царей, императоров, советских лидеров и президентов. Нижняя линия показывает переломы в государственности, войне, религии, реформах и распаде.
-          </span>
-        </p>
       </section>
 
-      <section
-        class="timeline-shell"
-        aria-label="Historical timeline"
-        style={`--content-width: ${timelineContentWidth}px; --scale-width: ${TIMELINE_SCALE_WIDTH}px; --ruler-lane-height: ${rulerLaneHeight}px; --event-lane-height: ${eventLaneHeight}px;`}
-      >
-        <div class="timeline-ruler-viewport" aria-hidden="true">
-          <div class="year-ruler" data-ruler-track>
+      <section class="atlas" aria-label="Интерактивная линия правителей">
+        <div class="atlas-topline">
+          <h2>Линия правителей</h2><span
+            >{rulers.length} правлений <span class="separator">/</span> 6 эпох</span>
+        </div>
+        <nav class="era-nav" aria-label="Перейти к эпохе">
+          {
+            eras.map((era, i) => (
+              <button
+                type="button"
+                class="era-button"
+                data-era={era.id}
+                data-year={era.start}
+                aria-pressed={i === 0 ? "true" : "false"}
+                style={`--era-color:${era.color}`}
+              >
+                <span class="era-dot" />
+                {era.name}
+              </button>
+            ))
+          }
+        </nav>
+        <div class="toolbar">
+          <div class="range-heading">
+            <span class="eyebrow">В ПОЛЕ ЗРЕНИЯ</span><output id="visible-years"
+              >862 — 962</output>
+          </div>
+          <label class="ruler-picker"
+            ><span>Найти правителя</span><select id="ruler-picker"
+              ><option value="">Выберите имя</option>{
+                rulers.map((r) => (
+                  <option value={r.id}>
+                    {r.name} · {r.dates}
+                  </option>
+                ))
+              }</select
+            ></label
+          >
+          <div class="zoom-control">
+            <div class="zoom-label">
+              <label for="zoom">Масштаб</label><output id="scale-label"
+                >×4</output>
+            </div>
+            <div class="zoom-input">
+              <button id="zoom-out" type="button" aria-label="Уменьшить масштаб"
+                >−</button
+              ><input
+                id="zoom"
+                type="range"
+                min="0"
+                max="7"
+                value="2"
+                step="1"
+                aria-label="Масштаб линии времени"
+              /><button
+                id="zoom-in"
+                type="button"
+                aria-label="Увеличить масштаб">+</button>
+            </div>
+          </div>
+        </div>
+        <div
+          class="timeline-viewport"
+          id="timeline"
+          tabindex="0"
+          role="region"
+          aria-label="Правители по годам. Прокручивайте горизонтально или используйте стрелки."
+          aria-describedby="timeline-help"
+        >
+          <div
+            class="timeline-track"
+            id="timeline-track"
+            style={`--scale:${scale}px;--years:${END_YEAR - START_YEAR}`}
+          >
+            <div class="track-caption" aria-hidden="true">
+              КНЯЗЬЯ · ЦАРИ · ИМПЕРАТОРЫ · РУКОВОДИТЕЛИ ГОСУДАРСТВА
+            </div>
+            <div class="year-axis" aria-hidden="true">
+              {
+                ticks.map((year) => (
+                  <span
+                    class="year-tick"
+                    data-year={year}
+                    data-major={year % 50 === 0 ? "true" : "false"}
+                    style={`left:calc((${year} - ${START_YEAR}) * var(--scale))`}
+                  >
+                    <span>{year}</span>
+                  </span>
+                ))
+              }
+            </div>
+            <div class="ruler-line" aria-label="Правления">
+              {
+                rulers.map((ruler, index) => {
+                  const era = eras.find((e) => e.id === ruler.era)!;
+                  const visualEnd = Math.min(
+                    ruler.end,
+                    rulers[index + 1]?.start ?? END_YEAR,
+                  );
+                  return (
+                    <button
+                      type="button"
+                      class="ruler"
+                      id={ruler.id}
+                      data-ruler={ruler.id}
+                      data-start={ruler.start}
+                      data-span={visualEnd - ruler.start}
+                      aria-label={`${ruler.name}, ${ruler.dates}. Открыть краткую справку`}
+                      aria-expanded="false"
+                      aria-controls="ruler-preview"
+                      style={`--era-color:${era.color};left:calc((${ruler.start} - ${START_YEAR}) * var(--scale));width:calc(${visualEnd - ruler.start} * var(--scale))`}
+                    >
+                      <>
+                        <span class="ruler-dates">{ruler.dates}</span>
+                        <span class="ruler-name">{ruler.name}</span>
+                        <span class="ruler-title">{ruler.title}</span>
+                        <span class="ruler-point" aria-hidden="true" />
+                      </>
+                    </button>
+                  );
+                })
+              }
+            </div>
+            <div class="era-ribbon" aria-hidden="true">
+              {
+                eras.map((era) => (
+                  <div
+                    style={`--era-color:${era.color};left:calc((${era.start} - ${START_YEAR}) * var(--scale));width:calc(${era.end - era.start} * var(--scale))`}
+                  >
+                    {era.name}
+                  </div>
+                ))
+              }
+            </div>
+          </div>
+        </div>
+        <div class="timeline-bottom">
+          <p id="timeline-help">
+            <span aria-hidden="true">↔</span> Листайте по горизонтали. <span
+              class="desktop-help">Наведите на правителя — узнайте больше.</span
+            ><span class="touch-help"
+              >Нажмите на правителя — узнайте больше.</span>
+          </p><div class="step-controls">
+            <button type="button" id="pan-back" aria-label="Раньше">←</button
+            ><button type="button" id="pan-forward" aria-label="Позже"
+              >→</button>
+          </div>
+        </div>
+        <div class="overview">
+          <div class="overview-label">
+            <label for="position">Вся история</label><span
+              >862 — {new Date().getFullYear()}</span>
+          </div>
+          <div class="overview-map" aria-hidden="true">
             {
-              yearMarks.map((year) => (
-                <div class="year-mark" style={`--left: ${Math.round((year - TIMELINE_START_YEAR) * YEAR_SCALE_PX)}px`}>
-                  <span>{year}</span>
-                </div>
+              eras.map((e) => (
+                <span style={`flex:${e.end - e.start};background:${e.color}`} />
               ))
-            }
+            }<span id="overview-window"></span>
           </div>
-        </div>
-        <div class="timeline-frame">
-          <div class="timeline-content">
-              <div class="horizontal-lane rulers-lane" style={`--lane-height: ${rulerLaneHeight}px;`}>
-                <div class="lane-heading">
-                  <span class="label-dot"></span>
-                  <div>
-                    <h2>
-                      <span class="lang-en">Rulers</span>
-                      <span class="lang-ru">Правители</span>
-                    </h2>
-                    <p>
-                      <span class="lang-en">Reigns and political leadership periods</span>
-                      <span class="lang-ru">Периоды правления и политического лидерства</span>
-                    </p>
-                  </div>
-                </div>
-                {
-                  placedRulers.map((item, index) => (
-                    <article
-                      class:list={["timeline-band", "rulers", { "align-end": item.alignEnd }]}
-                      style={`--left: ${item.left}px; --row: ${item.row}; --width: ${item.width}px; --delay: ${index * 22}ms`}
-                      tabindex="0"
-                    >
-                      <div class="compact-band">
-                        <span class="date">{item.date}</span>
-                        <strong>
-                          <span class="lang-en">{item.title.en}</span>
-                          <span class="lang-ru">{item.title.ru}</span>
-                        </strong>
-                        <span class="band-summary">
-                          <span class="lang-en">{item.summary.en}</span>
-                          <span class="lang-ru">{item.summary.ru}</span>
-                        </span>
-                        <div class="detail-card">
-                          <p class="era">
-                            <span class="lang-en">{item.era.en}</span>
-                            <span class="lang-ru">{item.era.ru}</span>
-                          </p>
-                          <h3>
-                            <span class="lang-en">{item.title.en}</span>
-                            <span class="lang-ru">{item.title.ru}</span>
-                          </h3>
-                          <p>
-                            <span class="lang-en">{item.description.en}</span>
-                            <span class="lang-ru">{item.description.ru}</span>
-                          </p>
-                        </div>
-                      </div>
-                    </article>
-                  ))
-                }
-              </div>
-
-              <div class="horizontal-lane events-lane" style={`--lane-height: ${eventLaneHeight}px;`}>
-                <div class="lane-heading">
-                  <span class="label-dot"></span>
-                  <div>
-                    <h2>
-                      <span class="lang-en">Major Events</span>
-                      <span class="lang-ru">Ключевые события</span>
-                    </h2>
-                    <p>
-                      <span class="lang-en">Statehood, war, religion, reform, and collapse</span>
-                      <span class="lang-ru">Государственность, войны, религия, реформы и распад</span>
-                    </p>
-                  </div>
-                </div>
-                {
-                  placedEvents.map((item, index) => (
-                    <article
-                      class:list={["timeline-band", "events", { "align-end": item.alignEnd }]}
-                      style={`--left: ${item.left}px; --row: ${item.row}; --width: ${item.width}px; --delay: ${index * 22}ms`}
-                      tabindex="0"
-                    >
-                      <div class="compact-band">
-                        <span class="date">{item.date}</span>
-                        <strong>
-                          <span class="lang-en">{item.title.en}</span>
-                          <span class="lang-ru">{item.title.ru}</span>
-                        </strong>
-                        <span class="band-summary">
-                          <span class="lang-en">{item.summary.en}</span>
-                          <span class="lang-ru">{item.summary.ru}</span>
-                        </span>
-                        <div class="detail-card">
-                          <p class="era">
-                            <span class="lang-en">{item.era.en}</span>
-                            <span class="lang-ru">{item.era.ru}</span>
-                          </p>
-                          <h3>
-                            <span class="lang-en">{item.title.en}</span>
-                            <span class="lang-ru">{item.title.ru}</span>
-                          </h3>
-                          <p>
-                            <span class="lang-en">{item.description.en}</span>
-                            <span class="lang-ru">{item.description.ru}</span>
-                          </p>
-                        </div>
-                      </div>
-                    </article>
-                  ))
-                }
-              </div>
-          </div>
+          <input
+            id="position"
+            type="range"
+            min="0"
+            max="1000"
+            value="0"
+            aria-label="Положение на линии времени"
+          />
         </div>
       </section>
+
+      <footer class="page-footer">
+        <span class="footer-monogram" aria-hidden="true">Р</span><div>
+          <p>История не всегда движется по прямой.</p><p class="editorial-note">
+            До возвышения Москвы показаны основные князья, а не все претенденты.
+            Перерывы и соправление поясняются в справках. В 1991 году
+            руководства СССР и РСФСР существовали одновременно. Длина отрезка
+            передаёт время, а не значение правителя.
+          </p><details>
+            <summary>О датах и источниках</summary><p>
+              Даты ранней Руси следуют летописной традиции и могут быть
+              спорными. Краткие правления внутри года размещены приблизительно.
+              Советская линия показывает политических руководителей, а не только
+              формальных глав государства. Современные сведения — на сентябрь
+              2026 года.
+            </p><p>
+              Справочные материалы: <a
+                href="https://history.ru/read/articles/pravitieli-rossii"
+                target="_blank"
+                rel="noreferrer">Правители России · История.РФ</a
+              >, <a
+                href="https://www.britannica.com/place/Russia/History"
+                target="_blank"
+                rel="noreferrer">История России · Британника</a
+              >. Тексты справок — краткое редакционное изложение.
+            </p>
+          </details>
+        </div>
+      </footer>
+      <noscript
+        ><section class="no-script">
+          <h2>Краткие справки о правителях</h2><p>
+            Для изменения масштаба включите JavaScript. Все справки доступны
+            ниже.
+          </p>{
+            rulers.map((r) => (
+              <details>
+                <>
+                  <summary>
+                    {r.name} · {r.dates}
+                  </summary>
+                  <p>{r.intro}</p>
+                </>
+              </details>
+            ))
+          }
+        </section></noscript
+      >
     </main>
-
-    <footer>
-      <p>
-        <span class="lang-en">Built as an Astro static site for quick bilingual historical scanning.</span>
-        <span class="lang-ru">Статический сайт Astro для быстрого двуязычного обзора истории.</span>
-      </p>
-    </footer>
-
+    <section
+      id="ruler-preview"
+      class="ruler-preview"
+      role="dialog"
+      aria-modal="false"
+      aria-labelledby="preview-name"
+      aria-describedby="preview-intro"
+      hidden
+    >
+      <div class="preview-top">
+        <span id="preview-era" class="eyebrow"></span><button
+          type="button"
+          id="close-preview"
+          aria-label="Закрыть справку">×</button>
+      </div>
+      <p id="preview-dates"></p><h2 id="preview-name"></h2><p
+        id="preview-title"
+      >
+      </p><p id="preview-intro"></p>
+      <div class="preview-bottom">
+        <span id="preview-count"></span><div>
+          <button
+            type="button"
+            id="previous-ruler"
+            aria-label="Предыдущий правитель">←</button
+          ><button
+            type="button"
+            id="next-ruler"
+            aria-label="Следующий правитель">→</button>
+        </div>
+      </div>
+    </section>
     <script>
-      const root = document.documentElement;
-      const buttons = Array.from(document.querySelectorAll("[data-set-lang]"));
-      const stored = localStorage.getItem("timeline-language");
-      const initial = stored === "ru" ? "ru" : "en";
-
-      function setLanguage(lang) {
-        root.dataset.lang = lang;
-        root.lang = lang;
-        localStorage.setItem("timeline-language", lang);
-        buttons.forEach((button) => {
-          const active = button.dataset.setLang === lang;
-          button.setAttribute("aria-pressed", String(active));
-        });
-      }
-
-      buttons.forEach((button) => {
-        button.addEventListener("click", () => setLanguage(button.dataset.setLang));
-      });
-
-      setLanguage(initial);
-
-      const timelineFrame = document.querySelector(".timeline-frame");
-      const rulerTrack = document.querySelector("[data-ruler-track]");
-
-      if (timelineFrame instanceof HTMLElement && rulerTrack instanceof HTMLElement) {
-        const syncRuler = () => {
-          rulerTrack.style.transform = `translateX(-${timelineFrame.scrollLeft}px)`;
-        };
-
-        timelineFrame.addEventListener("scroll", syncRuler, { passive: true });
-        syncRuler();
-      }
+      import "../scripts/timeline";
     </script>
   </body>
 </html>
-
-<style>
-  :root {
-    color-scheme: light;
-    --paper: #f4efe6;
-    --paper-strong: #fffaf0;
-    --ink: #22201d;
-    --muted: #70685c;
-    --line: rgba(41, 36, 29, 0.16);
-    --red: #9f352c;
-    --blue: #24495c;
-    --shadow: 0 24px 80px rgba(50, 42, 31, 0.12);
-    font-family:
-      ui-sans-serif,
-      system-ui,
-      -apple-system,
-      BlinkMacSystemFont,
-      "Segoe UI",
-      sans-serif;
-    background: var(--paper);
-    color: var(--ink);
-  }
-
-  * {
-    box-sizing: border-box;
-  }
-
-  html {
-    scroll-behavior: smooth;
-  }
-
-  body {
-    margin: 0;
-    min-width: 320px;
-    background:
-      linear-gradient(90deg, rgba(34, 32, 29, 0.035) 1px, transparent 1px) 0 0 / 44px 44px,
-      linear-gradient(180deg, rgba(34, 32, 29, 0.03) 1px, transparent 1px) 0 0 / 44px 44px,
-      var(--paper);
-  }
-
-  body::before {
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-    content: "";
-    background:
-      radial-gradient(circle at 16% 10%, rgba(159, 53, 44, 0.14), transparent 27rem),
-      radial-gradient(circle at 88% 4%, rgba(36, 73, 92, 0.12), transparent 24rem);
-  }
-
-  .lang-ru {
-    display: none;
-  }
-
-  html[data-lang="ru"] .lang-en {
-    display: none;
-  }
-
-  html[data-lang="ru"] .lang-ru {
-    display: inline;
-  }
-
-  .hero,
-  main,
-  footer {
-    width: min(100% - 32px, 1180px);
-    margin: 0 auto;
-  }
-
-  .hero {
-    min-height: calc(100dvh - 48px);
-    padding: 24px 0 56px;
-  }
-
-  .topbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    min-height: 48px;
-  }
-
-  .brand {
-    display: inline-grid;
-    width: 42px;
-    height: 42px;
-    place-items: center;
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    color: var(--ink);
-    text-decoration: none;
-    background: rgba(255, 250, 240, 0.72);
-  }
-
-  .brand span,
-  .eyebrow,
-  .date,
-  .era,
-  .stats strong {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    letter-spacing: 0;
-  }
-
-  .brand span {
-    font-size: 0.78rem;
-  }
-
-  .language-toggle {
-    display: inline-flex;
-    gap: 4px;
-    padding: 4px;
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    background: rgba(255, 250, 240, 0.78);
-  }
-
-  button {
-    min-width: 46px;
-    border: 0;
-    border-radius: 6px;
-    padding: 10px 12px;
-    color: var(--muted);
-    background: transparent;
-    font: inherit;
-    font-size: 0.78rem;
-    cursor: pointer;
-    transition:
-      transform 180ms ease,
-      background 180ms ease,
-      color 180ms ease;
-  }
-
-  button:hover,
-  button:focus-visible {
-    color: var(--ink);
-    outline: 2px solid rgba(159, 53, 44, 0.42);
-    outline-offset: 2px;
-  }
-
-  button:active {
-    transform: translateY(1px);
-  }
-
-  button[aria-pressed="true"] {
-    color: var(--paper-strong);
-    background: var(--ink);
-  }
-
-  .hero-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 0.95fr) minmax(320px, 0.72fr);
-    align-items: end;
-    gap: clamp(28px, 5vw, 72px);
-    padding-top: clamp(42px, 8vw, 96px);
-  }
-
-  .hero-copy {
-    padding-bottom: clamp(8px, 3vw, 32px);
-  }
-
-  .eyebrow {
-    margin: 0 0 16px;
-    color: var(--red);
-    font-size: 0.78rem;
-    font-weight: 700;
-    text-transform: uppercase;
-  }
-
-  h1,
-  h2,
-  h3 {
-    margin: 0;
-    font-family: Georgia, "Times New Roman", serif;
-    font-weight: 540;
-    letter-spacing: 0;
-  }
-
-  h1 {
-    max-width: 760px;
-    font-size: clamp(3.2rem, 8vw, 7.4rem);
-    line-height: 0.92;
-  }
-
-  .lede {
-    max-width: 660px;
-    margin: 26px 0 0;
-    color: var(--muted);
-    font-size: clamp(1.05rem, 1.7vw, 1.32rem);
-    line-height: 1.65;
-  }
-
-  .stats {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 170px));
-    gap: 12px;
-    margin-top: 34px;
-  }
-
-  .stats div {
-    border-top: 1px solid var(--line);
-    padding-top: 14px;
-  }
-
-  .stats strong {
-    display: block;
-    font-size: 1.35rem;
-  }
-
-  .stats span {
-    color: var(--muted);
-    font-size: 0.92rem;
-  }
-
-  .hero-media {
-    position: relative;
-    margin: 0;
-  }
-
-  .hero-media::before {
-    position: absolute;
-    inset: 18px -18px -18px 18px;
-    z-index: -1;
-    border: 1px solid rgba(159, 53, 44, 0.32);
-    content: "";
-  }
-
-  .hero-media img {
-    display: block;
-    width: 100%;
-    aspect-ratio: 4 / 5;
-    object-fit: cover;
-    border: 1px solid rgba(34, 32, 29, 0.24);
-    box-shadow: var(--shadow);
-    filter: sepia(0.16) saturate(0.86);
-  }
-
-  figcaption {
-    margin-top: 12px;
-    color: var(--muted);
-    font-size: 0.78rem;
-    line-height: 1.5;
-  }
-
-  .intro {
-    display: grid;
-    grid-template-columns: minmax(0, 0.78fr) minmax(280px, 0.52fr);
-    gap: clamp(24px, 5vw, 80px);
-    padding: 64px 0 34px;
-    border-top: 1px solid var(--line);
-  }
-
-  .intro h2 {
-    max-width: 680px;
-    font-size: clamp(2rem, 4vw, 4.2rem);
-    line-height: 1;
-  }
-
-  .intro p:last-child {
-    align-self: end;
-    margin: 0;
-    color: var(--muted);
-    font-size: 1rem;
-    line-height: 1.7;
-  }
-
-  .timeline-shell {
-    padding: 24px 0 88px;
-  }
-
-  .timeline-ruler-viewport {
-    position: sticky;
-    top: 0;
-    z-index: 16;
-    width: 100%;
-    height: 54px;
-    overflow: hidden;
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
-    background: rgba(244, 239, 230, 0.92);
-    backdrop-filter: blur(12px);
-  }
-
-  .timeline-frame {
-    overflow-x: auto;
-    padding: 18px 0;
-    scroll-padding-inline: 18px;
-  }
-
-  .timeline-frame::-webkit-scrollbar {
-    height: 10px;
-  }
-
-  .timeline-frame::-webkit-scrollbar-thumb {
-    border: 3px solid var(--paper);
-    border-radius: 999px;
-    background: rgba(34, 32, 29, 0.24);
-  }
-
-  .timeline-content {
-    width: var(--content-width);
-    min-width: 980px;
-  }
-
-  .year-ruler {
-    position: relative;
-    height: 54px;
-    width: var(--scale-width);
-    will-change: transform;
-  }
-
-  .year-ruler::before {
-    position: absolute;
-    top: 50%;
-    right: 0;
-    left: 0;
-    height: 1px;
-    background: rgba(34, 32, 29, 0.22);
-    content: "";
-  }
-
-  .year-mark {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: var(--left);
-    width: 1px;
-    background: rgba(34, 32, 29, 0.2);
-  }
-
-  .year-mark span {
-    position: absolute;
-    top: 9px;
-    left: 8px;
-    color: var(--muted);
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    font-size: 0.72rem;
-    letter-spacing: 0;
-  }
-
-  .horizontal-lane {
-    position: relative;
-    height: var(--lane-height);
-    margin-top: 28px;
-    border-top: 1px solid rgba(34, 32, 29, 0.18);
-    border-bottom: 1px solid rgba(34, 32, 29, 0.1);
-  }
-
-  .horizontal-lane::before {
-    position: absolute;
-    top: 70px;
-    right: 0;
-    left: 0;
-    height: 1px;
-    background: rgba(34, 32, 29, 0.16);
-    content: "";
-  }
-
-  .lane-heading {
-    position: absolute;
-    top: 18px;
-    left: 0;
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    width: min(460px, 88vw);
-    padding-right: 24px;
-  }
-
-  .label-dot {
-    flex: 0 0 auto;
-    width: 12px;
-    height: 12px;
-    margin-top: 4px;
-    border-radius: 50%;
-    background: var(--red);
-  }
-
-  .events-lane .label-dot {
-    background: var(--blue);
-  }
-
-  .lane-heading h2 {
-    font-family:
-      ui-sans-serif,
-      system-ui,
-      -apple-system,
-      BlinkMacSystemFont,
-      "Segoe UI",
-      sans-serif;
-    font-size: 0.86rem;
-    font-weight: 800;
-    text-transform: uppercase;
-  }
-
-  .lane-heading p {
-    max-width: 36ch;
-    margin: 6px 0 0;
-    color: var(--muted);
-    font-size: 0.86rem;
-    line-height: 1.45;
-  }
-
-  .timeline-band {
-    position: absolute;
-    top: calc(94px + var(--row) * 86px);
-    left: var(--left);
-    z-index: 1;
-    --expanded-width: min(420px, calc(var(--width) + 260px));
-    width: var(--width);
-    min-width: var(--width);
-    opacity: 0;
-    outline: none;
-    animation: rise-in 540ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    animation-delay: var(--delay);
-  }
-
-  .timeline-band:hover,
-  .timeline-band:focus,
-  .timeline-band:focus-within {
-    z-index: 12;
-  }
-
-  .compact-band {
-    position: relative;
-    display: grid;
-    align-content: center;
-    gap: 2px;
-    width: var(--width);
-    min-height: 66px;
-    max-height: 66px;
-    overflow: hidden;
-    border: 1px solid rgba(159, 53, 44, 0.32);
-    border-radius: 8px;
-    padding: 10px 12px 11px;
-    background: rgba(255, 250, 240, 0.84);
-    box-shadow: 0 10px 24px rgba(50, 42, 31, 0.07);
-    transition:
-      transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
-      border-color 220ms ease,
-      background 220ms ease,
-      max-height 260ms cubic-bezier(0.16, 1, 0.3, 1),
-      width 260ms cubic-bezier(0.16, 1, 0.3, 1),
-      box-shadow 220ms ease;
-  }
-
-  .compact-band::before {
-    position: absolute;
-    top: 0;
-    right: 0;
-    left: 0;
-    height: 5px;
-    background: var(--red);
-    content: "";
-  }
-
-  .events .compact-band {
-    border-color: rgba(36, 73, 92, 0.32);
-  }
-
-  .events .compact-band::before {
-    background: var(--blue);
-  }
-
-  .timeline-band:hover .compact-band,
-  .timeline-band:focus .compact-band,
-  .timeline-band:focus-within .compact-band {
-    width: var(--expanded-width);
-    max-height: 520px;
-    transform: translateY(-4px) scale(1.02);
-    border-color: rgba(34, 32, 29, 0.34);
-    background: var(--paper-strong);
-    box-shadow: 0 20px 44px rgba(50, 42, 31, 0.16);
-  }
-
-  .align-end:hover .compact-band,
-  .align-end:focus .compact-band,
-  .align-end:focus-within .compact-band {
-    margin-left: calc(var(--width) - var(--expanded-width));
-  }
-
-  .date {
-    color: var(--muted);
-    font-size: 0.72rem;
-    line-height: 1.25;
-    white-space: nowrap;
-  }
-
-  .compact-band strong,
-  .band-summary {
-    display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .compact-band strong {
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 0.95rem;
-    font-weight: 700;
-    line-height: 1.1;
-  }
-
-  .band-summary {
-    color: var(--muted);
-    font-size: 0.72rem;
-    line-height: 1.25;
-  }
-
-  .era {
-    margin: 0 0 10px;
-    color: var(--red);
-    font-size: 0.72rem;
-    font-weight: 700;
-    text-transform: uppercase;
-  }
-
-  .events .era {
-    color: var(--blue);
-  }
-
-  .detail-card {
-    width: 100%;
-    margin-top: 12px;
-    border: 1px solid rgba(34, 32, 29, 0.18);
-    border-left: 5px solid var(--red);
-    border-radius: 8px;
-    padding: 14px 16px 16px;
-    background: rgba(255, 250, 240, 0.98);
-    box-shadow: 0 18px 42px rgba(50, 42, 31, 0.14);
-    opacity: 0;
-    transform: translateY(-4px);
-    transition:
-      opacity 180ms ease,
-      transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .align-end .detail-card {
-    margin-left: auto;
-  }
-
-  .events .detail-card {
-    border-left-color: var(--blue);
-  }
-
-  .timeline-band:hover .detail-card,
-  .timeline-band:focus .detail-card,
-  .timeline-band:focus-within .detail-card {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  .detail-card h3 {
-    font-size: clamp(1.12rem, 1.55vw, 1.48rem);
-    line-height: 1.1;
-  }
-
-  .detail-card p:last-child {
-    margin: 12px 0 0;
-    color: var(--muted);
-    font-size: 0.9rem;
-    line-height: 1.52;
-  }
-
-  footer {
-    border-top: 1px solid var(--line);
-    padding: 26px 0 42px;
-    color: var(--muted);
-    font-size: 0.9rem;
-  }
-
-  @keyframes rise-in {
-    from {
-      opacity: 0;
-      transform: translateY(12px);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @media (max-width: 820px) {
-    .hero,
-    main,
-    footer {
-      width: min(100% - 24px, 680px);
-    }
-
-    .hero {
-      min-height: auto;
-      padding-bottom: 36px;
-    }
-
-    .hero-grid,
-    .intro {
-      grid-template-columns: 1fr;
-    }
-
-    .hero-grid {
-      padding-top: 34px;
-    }
-
-    h1 {
-      font-size: clamp(3rem, 16vw, 5rem);
-    }
-
-    .stats {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .hero-media::before {
-      inset: 12px -10px -10px 10px;
-    }
-
-    .hero-media img {
-      aspect-ratio: 16 / 11;
-    }
-
-    .intro {
-      padding-top: 42px;
-    }
-
-    .timeline-content {
-      min-width: 860px;
-    }
-  }
-
-  @media (max-width: 520px) {
-    .timeline-content {
-      min-width: 780px;
-    }
-
-    .detail-card {
-      width: min(340px, calc(var(--width) + 220px));
-      padding: 13px 15px 15px;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-      scroll-behavior: auto !important;
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-    }
-  }
-</style>

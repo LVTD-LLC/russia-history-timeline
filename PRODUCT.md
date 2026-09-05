@@ -1,33 +1,14 @@
-# PRODUCT.md
+# Product
 
-## Product
+A Russian-only educational timeline of rulers of Rus and Russia, from Rurik to the present.
 
-`russia-history-timeline` is a public educational timeline for quickly scanning Russian history in two languages.
+## Core workflow
 
-## Audience
-
-- English readers who want a compact overview of Russian history.
-- Russian readers who want the same structure without switching sources.
-- Agents or editors extending a structured historical dataset.
-
-## Core Workflow
-
-1. Open the page.
-2. Switch between English and Russian.
-3. Compare rulers and major events side by side.
-4. Use era labels and dates to scan across long periods.
+1. Scan the horizontal ruler line.
+2. Adjust scale or jump to an era.
+3. Hover or tap a ruler to read a concise introduction.
+4. Use the ruler picker to reach short reigns and the overview to explore the full chronology.
 
 ## Scope
 
-In scope:
-
-- Origins before the name "Russia" stabilized.
-- Rulers, dynasties, state formations, and modern heads of state.
-- Major political, religious, military, cultural, and territorial events.
-- English and Russian content parity.
-
-Out of scope for the initial version:
-
-- Full academic citations per entry.
-- Interactive maps.
-- User accounts or CMS editing.
+One historical ruler line, Russian summaries, accessible desktop and phone interactions. Earlier medieval rulers are selected highlights; interruptions and co-rule are explained rather than represented as additional lanes. Modern entries include political leaders, not exclusively formal heads of state. No separate events feed, English version, accounts, map, or CMS.
