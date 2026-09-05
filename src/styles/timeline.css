@@ -969,3 +969,198 @@ summary {
     font-size: 13px;
   }
 }
+
+/* Both scrollports reserve the same gutter: one year has the same x coordinate. */
+.timeline-viewport {
+  scrollbar-gutter: stable;
+}
+.painters-section {
+  border-top: 1px solid var(--line, #ddd7cb);
+  background: #f0f1e9;
+}
+.painters-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 22px 32px 12px;
+  align-items: center;
+}
+.painters-heading h2 {
+  font:
+    500 27px Georgia,
+    serif;
+  margin: 7px 0;
+}
+.painters-heading p:not(.eyebrow),
+.painter-note,
+.painters-empty {
+  font-size: 12px;
+  line-height: 1.65;
+  color: #5d6559;
+}
+.painters-heading p {
+  margin: 0;
+}
+.painters-heading .ruler-picker {
+  min-width: 230px;
+  max-width: 310px;
+}
+.painter-shortcuts {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 32px 12px;
+}
+.painter-shortcuts > span {
+  font-size: 11px;
+  color: #5d6559;
+  margin-right: auto;
+}
+.painter-shortcuts button {
+  border: 1px solid #c3cabb;
+  border-radius: 20px;
+  background: transparent;
+  color: #364c41;
+  padding: 8px 13px;
+  min-height: 36px;
+  cursor: pointer;
+}
+.painters-viewport {
+  min-height: 90px;
+  max-height: 300px;
+  height: 300px;
+  overscroll-behavior: contain;
+}
+.painters-track {
+  height: 100px;
+}
+.painter-axis {
+  position: sticky;
+  top: 0;
+  height: 36px;
+  z-index: 3;
+  background: #f0f1e9;
+}
+.painter-axis .year-tick {
+  top: 12px;
+  height: 20px;
+}
+.painter-axis .year-tick::after {
+  height: 12px;
+}
+.painter {
+  position: absolute;
+  height: 46px;
+  padding: 0;
+  border: 1px solid #7e9b85;
+  border-left: 3px solid #416b52;
+  border-radius: 4px;
+  background: #dfe8db;
+  color: #233f2f;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+}
+.painter:hover,
+.painter[aria-expanded="true"] {
+  background: #ccdcca;
+  outline: 2px solid #416b52;
+  outline-offset: -2px;
+}
+.painter-label {
+  display: block;
+  position: relative;
+  width: max-content;
+  max-width: 100%;
+  padding: 5px 9px;
+}
+.painter-label strong,
+.painter-label > span {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.painter-label strong {
+  font-size: 12px;
+  font-weight: 600;
+}
+.painter-label > span {
+  font-size: 10px;
+  margin-top: 3px;
+}
+.painter-note,
+.painters-empty {
+  margin: 0;
+  padding: 12px 32px;
+}
+.painters-empty {
+  padding-top: 0;
+}
+#contemporaries {
+  border-top: 1px solid #ddd7cb;
+  margin-top: 16px;
+  padding-top: 12px;
+}
+#contemporaries summary {
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+}
+.contemporary-note {
+  font-size: 11px;
+  line-height: 1.5;
+  color: #65645b;
+}
+#contemporary-links {
+  display: grid;
+  gap: 5px;
+}
+#contemporary-links button {
+  text-align: left;
+  padding: 9px;
+  min-height: 40px;
+  background: #f1eee5;
+  border: 1px solid #ddd7cb;
+  border-radius: 4px;
+  color: #393f33;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+}
+@media (max-width: 640px) {
+  .painters-heading {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 20px 20px 12px;
+    gap: 14px;
+  }
+  .painters-heading .ruler-picker {
+    min-width: 0;
+    max-width: none;
+  }
+  .painter-shortcuts {
+    padding: 0 20px 12px;
+  }
+  .painter-shortcuts > span {
+    width: 100%;
+  }
+  .painter-shortcuts button {
+    min-height: 44px;
+  }
+  .painter-note,
+  .painters-empty {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  .painters-viewport {
+    max-height: 270px;
+  }
+}
+.painter-axis .year-tick > span {
+  top: 0;
+}
+.painters-heading select {
+  width: 100%;
+}

@@ -1,5 +1,6 @@
 ---
 import { rulers, timeline, eras, START_YEAR, END_YEAR } from "../data/timeline";
+import { painters } from "../data/painters";
 import "../styles/timeline.css";
 const scale = 8;
 const ticks = Array.from(
@@ -15,7 +16,7 @@ const ticks = Array.from(
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Правители Руси и России: одна интерактивная линия времени от Рюрика до наших дней. Меняйте масштаб и знакомьтесь с историей каждого правления."
+      content="Правители России и известные художники на общей шкале времени. Сравнивайте эпохи, меняйте масштаб и узнавайте о современниках."
     />
     <meta name="theme-color" content="#f6f3ec" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -37,8 +38,8 @@ const ticks = Array.from(
           </p>
           <h1 id="page-title">Правители <em>России</em></h1>
           <p class="lead">
-            Одна линия. Больше тысячи лет.<br />Люди, которые меняли ход
-            истории.
+            Власть и живопись на одной шкале времени.<br />Узнайте, кто жил в
+            одну эпоху.
           </p>
         </div>
         <figure class="historical-image">
@@ -198,6 +199,96 @@ const ticks = Array.from(
             </div>
           </div>
         </div>
+        <section class="painters-section" aria-labelledby="painters-heading">
+          <div class="painters-heading">
+            <div>
+              <p class="eyebrow">ИСКУССТВО РЯДОМ С ИСТОРИЕЙ</p><h2
+                id="painters-heading"
+              >
+                Художники
+              </h2><p>
+                Полосы — годы жизни. Масштаб и прокрутка общие с правителями.
+              </p>
+            </div>
+            <label class="ruler-picker"
+              ><span>Найти художника</span><select id="painter-picker"
+                ><option value="">Выберите имя</option>{
+                  painters.map((p) => (
+                    <option value={p.id}>
+                      {p.name} · {p.dates}
+                    </option>
+                  ))
+                }</select
+              ></label
+            >
+          </div>
+          <div class="painter-shortcuts">
+            <span id="painter-count"></span><button
+              type="button"
+              data-painter-year="1360">Иконопись</button
+            ><button type="button" data-painter-year="1840">XIX век</button
+            ><button type="button" data-painter-year="1910">Авангард</button>
+          </div>
+          <p id="painters-empty" class="painters-empty">
+            В этих годах нет художников из подборки — это не означает отсутствия
+            живописи. Выберите имя или перейдите к другой эпохе.
+          </p>
+          <div
+            id="painters-timeline"
+            class="timeline-viewport painters-viewport"
+            role="region"
+            tabindex="0"
+            aria-label="Годы жизни художников. Прокручивайте по горизонтали вместе с правителями и по вертикали для просмотра современников."
+          >
+            <div
+              id="painters-track"
+              class="timeline-track painters-track"
+              style={`--scale:${scale}px;--years:${END_YEAR - START_YEAR}`}
+            >
+              <div class="painter-axis" aria-hidden="true">
+                {
+                  ticks.map((year) => (
+                    <span
+                      class="year-tick"
+                      data-year={year}
+                      style={`left:calc((${year} - ${START_YEAR}) * var(--scale))`}
+                    >
+                      <span>{year}</span>
+                    </span>
+                  ))
+                }
+              </div>
+              {
+                painters.map((p) => (
+                  <button
+                    type="button"
+                    class="painter"
+                    data-painter={p.id}
+                    data-start={p.start}
+                    data-end={p.end}
+                    aria-label={`${p.name}, ${p.dates}. Открыть справку`}
+                    aria-expanded="false"
+                    aria-controls="ruler-preview"
+                    style={`left:calc((${p.start} - ${START_YEAR}) * var(--scale));width:calc(${p.end - p.start} * var(--scale))`}
+                  >
+                    <span class="painter-label">
+                      <>
+                        <strong>{p.name}</strong>
+                        <span>{p.dates}</span>
+                      </>
+                    </span>
+                  </button>
+                ))
+              }
+            </div>
+          </div>
+          <p class="painter-note">
+            {painters.length} художников · Листайте вниз внутри линии, чтобы увидеть
+            всех современников. Выборочная, не исчерпывающая подборка. Годы жизни
+            включают детство и жизнь за рубежом; это не сроки работы в России. Приблизительные
+            даты отмечены «ок.».
+          </p>
+        </section>
         <div class="timeline-bottom">
           <p id="timeline-help">
             <span aria-hidden="true">↔</span> Листайте по горизонтали. <span
@@ -252,7 +343,17 @@ const ticks = Array.from(
               формальных глав государства. Современные сведения — на сентябрь
               2026 года.
             </p><p>
-              Справочные материалы: <a
+              Живописцы разных культур включены по связи с Русью, Российской
+              империей, СССР или Россией, а не по единой национальности.
+              Биографии: <a
+                href="https://my.tretyakov.ru/"
+                target="_blank"
+                rel="noreferrer">Третьяковская галерея</a
+              >, <a
+                href="https://rusmuseumvrm.ru/"
+                target="_blank"
+                rel="noreferrer">Русский музей</a
+              >. Справочные материалы о правителях: <a
                 href="https://history.ru/read/articles/pravitieli-rossii"
                 target="_blank"
                 rel="noreferrer">Правители России · История.РФ</a
@@ -275,6 +376,20 @@ const ticks = Array.from(
       </footer>
       <noscript
         ><section class="no-script">
+          <h2>Художники</h2>{
+            painters.map((p) => (
+              <details>
+                <>
+                  <summary>
+                    {p.name} · {p.dates}
+                  </summary>
+                  <p>{p.intro}</p>
+                  <p>{p.connection}</p>
+                  <p>{p.works}</p>
+                </>
+              </details>
+            ))
+          }
           <h2>Краткие справки о правителях</h2><p>
             Для изменения масштаба включите JavaScript. Все справки доступны
             ниже.
@@ -341,6 +456,15 @@ const ticks = Array.from(
           >
           </dd>
         </dl>
+        <details id="contemporaries">
+          <summary id="contemporaries-label"></summary><p
+            class="contemporary-note"
+          >
+            Совпадение лет жизни и правления, а не свидетельство знакомства или
+            работы при дворе. Внутри одного года и при приблизительных датах
+            возможны неточности.
+          </p><div id="contemporary-links"></div>
+        </details>
       </div>
       <div class="preview-bottom">
         <span id="preview-count"></span><div>

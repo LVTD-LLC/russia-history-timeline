@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-05 — Painters alongside rulers
+
+- Added 36 Russian-language painter biographies, lifespan bars, a painter picker and period shortcuts.
+- Synchronized horizontal scrolling and all eight zoom levels across rulers and painters; overlapping lives occupy separate rows without shortening their dates.
+- Added bidirectional contemporary links to cards, notes about approximate dates, selection gaps, and time spent abroad.
+- Verified alignment, touch/hover, keyboard navigation and responsive cards at desktop, 390px and 320px widths.
+
 ## 2026-09-05 — Succession and chronology context
 
 - Filled 1132–1155 with 12 Kiev reign segments, including repeated accessions and co-rule.
