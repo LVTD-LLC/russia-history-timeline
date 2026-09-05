@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-05
+
+- Replaced the bilingual rulers/events view with a Russian-only, single horizontal ruler timeline.
+- Expanded Russian introductions to 67 reigns, with notes on medieval selection, regencies, interruptions, and overlapping Soviet/Russian leadership.
+- Added eight proportional zoom levels, era shortcuts, ruler selection, overview navigation, and keyboard controls.
+- Redesigned the atlas for phones, with touch scrolling and compact tap-to-open ruler cards; desktop supports hover and focus previews.
+- Added desktop and mobile interaction checks and refreshed project documentation.
+
 ## 2026-07-05
 
 - Replaced the vertical comparison timeline with horizontal proportional lanes for rulers and major events.

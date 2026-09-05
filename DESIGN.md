@@ -1,26 +1,10 @@
-# DESIGN.md
+# Design
 
-## Direction
+A Russian-language historical atlas: warm paper, charcoal type, muted era colors, serif names and restrained editorial imagery.
 
-The site should feel like a modern historical atlas: restrained, readable, and document-like, with enough visual richness to make a long timeline pleasant to scan.
-
-## Visual System
-
-- Background: warm paper and charcoal tones, not pure white or pure black.
-- Accent: restrained red used for state/history markers.
-- Typography: system serif for historical titles, system sans for UI labels, monospace for dates.
-- Cards: keep radii small and use borders more than heavy shadows.
-
-## Layout
-
-- The first viewport must show the project identity and a real historical visual.
-- Timelines are side by side on desktop and stacked on mobile.
-- Rulers and events should stay visually distinct with different accent borders.
-- Every timeline item needs a stable date block, era label, title, and short description.
-
-## Accessibility
-
-- Preserve visible focus states.
-- Language toggle buttons must expose `aria-pressed`.
-- Keep contrast high enough on all text.
-- Do not rely on color alone; labels and headings must name each column.
+- One horizontal ruler lane at every viewport width. No events lane or language switch.
+- Position and reign width use the same pixels-per-year scale; short reign labels collapse instead of distorting time. The ruler picker and keyboard navigation keep every entry accessible.
+- Eight zoom levels preserve the year at the viewport center. Era shortcuts and an overview slider navigate the full range.
+- Desktop: compact hover/focus preview, click to keep open. Phone: tap opens a bottom card, with close and previous/next controls.
+- Keep document width within the viewport; only timeline and era shortcuts scroll horizontally.
+- Native controls, visible keyboard focus, Escape dismissal, reduced-motion support, Russian accessible labels, no external fonts.

@@ -4,7 +4,7 @@ This file is for coding agents working on `russia-history-timeline`.
 
 ## Project Summary
 
-This is a bilingual Astro 7 static site about the history of Russia from early Slavic/Rus' origins to the present. The main product surface is `src/pages/index.astro`, backed by timeline content in `src/data/timeline.ts`.
+This is a Russian-only Astro 7 static historical atlas with one horizontal line of rulers of Rus and Russia. The main product surface is `src/pages/index.astro`, backed by timeline content in `src/data/timeline.ts`.
 
 ## Commands
 
@@ -35,15 +35,16 @@ npm run preview
 ## Workflow
 
 - Do not commit directly to `main`; create a branch and PR.
-- Keep English and Russian copy in sync for every timeline entry.
+- Keep all public-facing content and accessibility labels in Russian.
 - Keep historical claims concise and date-led. If adding contested interpretation, phrase it as interpretation rather than certainty.
 - Update `CHANGELOG.md` for shipped changes.
 - Before merge, run `npm run build` and use the Greptile/check-pr gate when configured on the PR.
 
 ## Structure
 
-- `src/data/timeline.ts` contains the bilingual timeline data.
-- `src/pages/index.astro` renders the page and owns styling/interaction.
+- `src/data/timeline.ts` contains Russian ruler summaries and numeric date ranges.
+- `src/pages/index.astro` renders the page; `src/styles/timeline.css` and `src/scripts/timeline.ts` own styling and interaction.
+- `npm test` runs Playwright interaction checks for desktop and mobile.
 - `public/` contains static assets served at the site root.
 - `Dockerfile`, `nginx.conf`, and `captain-definition` define CapRover deployment.
 
