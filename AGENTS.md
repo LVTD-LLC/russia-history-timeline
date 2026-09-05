@@ -4,7 +4,7 @@ This file is for coding agents working on `russia-history-timeline`.
 
 ## Project Summary
 
-This is a Russian-only Astro 7 static historical atlas with one horizontal line of rulers of Rus and Russia and a synchronized painter-lifespan lane. The main product surface is `src/pages/index.astro`, backed by timeline content in `src/data/timeline.ts`.
+This is a Russian-only Astro 7 static historical atlas with one horizontal line of rulers of Rus and Russia and synchronized major-event and painter-lifespan lanes. The main product surface is `src/pages/index.astro`, backed by timeline content in `src/data/timeline.ts`.
 
 ## Commands
 

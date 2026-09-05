@@ -1,0 +1,722 @@
+[
+  {
+    "id": "theophanes-1",
+    "painter": "theophanes",
+    "title": "Спас Вседержитель",
+    "date": "1378",
+    "image": "/artworks/theophanes-1.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Spas_na_Ilyine_-_Christ_Pantocrator_01.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "theophanes-2",
+    "painter": "theophanes",
+    "title": "Троица",
+    "date": "1378",
+    "image": "/artworks/theophanes-2.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Spas_na_Ilyine_-_Trinity.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "rublev-1",
+    "painter": "rublev",
+    "title": "Троица",
+    "date": "XV век",
+    "image": "/artworks/rublev-1.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Andrey_Rublev_-_%D0%A1%D0%B2._%D0%A2%D1%80%D0%BE%D0%B8%D1%86%D0%B0_-_Google_Art_Project.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "rublev-2",
+    "painter": "rublev",
+    "title": "Спас из Звенигородского чина",
+    "date": "начало XV века",
+    "image": "/artworks/rublev-2.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Rublev%27s_saviour.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "ushakov-1",
+    "painter": "ushakov",
+    "title": "Троица",
+    "date": "1671",
+    "image": "/artworks/ushakov-1.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Trinity_by_S.Ushakov_(1671,_Russian_museum)_01.JPG",
+    "credit": "Викисклад · Shakko",
+    "license": "CC BY-SA 3.0"
+  },
+  {
+    "id": "ushakov-2",
+    "painter": "ushakov",
+    "title": "Спас Нерукотворный",
+    "date": "1658",
+    "image": "/artworks/ushakov-2.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Simon_Ushakov_-_%D0%A1%D0%BF%D0%B0%D1%81_%D0%9D%D0%B5%D1%80%D1%83%D0%BA%D0%BE%D1%82%D0%B2%D0%BE%D1%80%D0%BD%D1%8B%D0%B9_-_Google_Art_Project.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "caravaque-1",
+    "painter": "caravaque",
+    "title": "Портрет Анны Иоанновны",
+    "date": "1730",
+    "image": "/artworks/caravaque-1.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Louis_Caravaque,_Portrait_of_Empress_Anna_Ioannovna_(1730).jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "caravaque-2",
+    "painter": "caravaque",
+    "title": "Портрет Анны Леопольдовны",
+    "date": "1730-е",
+    "image": "/artworks/caravaque-2.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Anna_Leopoldovna_by_L.Caravaque_(after_1733,_Tropinin_museum).jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "rotari-1",
+    "painter": "rotari",
+    "title": "Девушка с книгой",
+    "date": "XVIII век",
+    "image": "/artworks/rotari-1.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Pietro_Rotari_-_Girl_with_a_Bonnet,_White_Shawl_and_Book..jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "rotari-2",
+    "painter": "rotari",
+    "title": "Портрет Елизаветы Петровны",
+    "date": "XVIII век",
+    "image": "/artworks/rotari-2.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Elizabeth_of_Russia_by_Rotari_(Tsarskoe_selo).jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "rokotov-1",
+    "painter": "rokotov",
+    "title": "Портрет А. П. Струйской",
+    "date": "1772",
+    "image": "/artworks/rokotov-1.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Fedor_Rokotov_-_%D0%9F%D0%BE%D1%80%D1%82%D1%80%D0%B5%D1%82_%D0%90.%D0%9F.%D0%A1%D1%82%D1%80%D1%83%D0%B9%D1%81%D0%BA%D0%BE%D0%B9_-_Google_Art_Project.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "rokotov-2",
+    "painter": "rokotov",
+    "title": "Портрет неизвестной в розовом платье",
+    "date": "1770-е",
+    "image": "/artworks/rokotov-2.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Rokotov_Unknown_In_Rose_Dress.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "levitsky-1",
+    "painter": "levitsky",
+    "title": "Портрет Е. И. Нелидовой",
+    "date": "1773",
+    "image": "/artworks/levitsky-1.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Ekaterina_Ivanovna_Nelidova_by_Dmitry_Levitzky_001.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "levitsky-2",
+    "painter": "levitsky",
+    "title": "Портрет Е. Н. Хрущовой и Е. Н. Хованской",
+    "date": "1773",
+    "image": "/artworks/levitsky-2.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Dmitry_Levitsky_-_Portrait_of_Ekaterina_Khruschova_and_Ekaterina_Khovanskaya_-_Google_Art_Project.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "vigee-lebrun-1",
+    "painter": "vigee-lebrun",
+    "title": "Автопортрет в соломенной шляпке",
+    "date": "после 1782",
+    "image": "/artworks/vigee-lebrun-1.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Self-portrait_in_a_Straw_Hat_by_Elisabeth-Louise_Vig%C3%A9e-Lebrun.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "vigee-lebrun-2",
+    "painter": "vigee-lebrun",
+    "title": "Мария-Антуанетта с детьми",
+    "date": "1787",
+    "image": "/artworks/vigee-lebrun-2.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Marie_Antoinette_and_her_Children_by_%C3%89lisabeth_Vig%C3%A9e-Lebrun.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "borovikovsky-1",
+    "painter": "borovikovsky",
+    "title": "Портрет М. И. Лопухиной",
+    "date": "1797",
+    "image": "/artworks/borovikovsky-1.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Vladimir_Borovikovskiy_-_%D0%9F%D0%BE%D1%80%D1%82%D1%80%D0%B5%D1%82_%D0%9C.%D0%98.%D0%9B%D0%BE%D0%BF%D1%83%D1%85%D0%B8%D0%BD%D0%BE%D0%B9_-_Google_Art_Project.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "borovikovsky-2",
+    "painter": "borovikovsky",
+    "title": "Екатерина II на прогулке в Царскосельском парке",
+    "date": "1794",
+    "image": "/artworks/borovikovsky-2.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Catherine_II_walking_by_V.Borovikovskiy_(1794,_Tretyakov_gallery).jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "tropinin-1",
+    "painter": "tropinin",
+    "title": "Кружевница",
+    "date": "1823",
+    "image": "/artworks/tropinin-1.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Tropinin_lacemaker.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "tropinin-2",
+    "painter": "tropinin",
+    "title": "Портрет А. С. Пушкина",
+    "date": "1827",
+    "image": "/artworks/tropinin-2.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:AleksandrPushkin.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "venetsianov-1",
+    "painter": "venetsianov",
+    "title": "На пашне. Весна",
+    "date": "1820-е",
+    "image": "/artworks/venetsianov-1.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Aleksey_Venetsianov_-_%D0%9D%D0%B0_%D0%BF%D0%B0%D1%88%D0%BD%D0%B5._%D0%92%D0%B5%D1%81%D0%BD%D0%B0_-_Google_Art_Project.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "venetsianov-2",
+    "painter": "venetsianov",
+    "title": "Гумно",
+    "date": "1821",
+    "image": "/artworks/venetsianov-2.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Alexei_Venetsianov_-_Threshing_Barn_-_Google_Art_Project.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "kiprensky-1",
+    "painter": "kiprensky",
+    "title": "Портрет А. С. Пушкина",
+    "date": "1827",
+    "image": "/artworks/kiprensky-1.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Kiprensky_Pushkin.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "kiprensky-2",
+    "painter": "kiprensky",
+    "title": "Портрет Е. В. Давыдова",
+    "date": "1809",
+    "image": "/artworks/kiprensky-2.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Orest_Kiprensky_-_Portrait_of_Life_Guard_Colonel_Yevgraf_Davydov_-_Google_Art_Project.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "bryullov-1",
+    "painter": "bryullov",
+    "title": "Последний день Помпеи",
+    "date": "1833",
+    "image": "/artworks/bryullov-1.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Karl_Brullov_-_The_Last_Day_of_Pompeii_-_Google_Art_Project.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "bryullov-2",
+    "painter": "bryullov",
+    "title": "Всадница",
+    "date": "1832",
+    "image": "/artworks/bryullov-2.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Karl_Bryullov_(Bryullo)_-_%D0%92%D1%81%D0%B0%D0%B4%D0%BD%D0%B8%D1%86%D0%B0_-_Google_Art_Project.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "ivanov-1",
+    "painter": "ivanov",
+    "title": "Явление Христа народу",
+    "date": "1837–1857",
+    "image": "/artworks/ivanov-1.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:%D0%90%D0%BB%D0%B5%D0%BA%D1%81%D0%B0%D0%BD%D0%B4%D1%80_%D0%90%D0%BD%D0%B4%D1%80%D0%B5%D0%B5%D0%B2%D0%B8%D1%87_%D0%98%D0%B2%D0%B0%D0%BD%D0%BE%D0%B2_-_%D0%AF%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5_%D0%A5%D1%80%D0%B8%D1%81%D1%82%D0%B0_%D0%BD%D0%B0%D1%80%D0%BE%D0%B4%D1%83_(%D0%AF%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5_%D0%9C%D0%B5%D1%81%D1%81%D0%B8%D0%B8)_-_Google_Art_Project.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "ivanov-2",
+    "painter": "ivanov",
+    "title": "Явление Христа Марии Магдалине после воскресения",
+    "date": "1835",
+    "image": "/artworks/ivanov-2.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Alexander_Ivanov_-_Christ%27s_Appearance_to_Mary_Magdalene_after_the_Resurrection_-_Google_Art_Project.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "aivazovsky-1",
+    "painter": "aivazovsky",
+    "title": "Девятый вал",
+    "date": "1850",
+    "image": "/artworks/aivazovsky-1.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Hovhannes_Aivazovsky_-_The_Ninth_Wave_-_Google_Art_Project.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "aivazovsky-2",
+    "painter": "aivazovsky",
+    "title": "Чесменский бой",
+    "date": "1848",
+    "image": "/artworks/aivazovsky-2.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Ivan_Constantinovich_Aivazovsky_-_Battle_of_%C3%87esme_at_Night.JPG",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "savrasov-1",
+    "painter": "savrasov",
+    "title": "Грачи прилетели",
+    "date": "1871",
+    "image": "/artworks/savrasov-1.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Aleksey_Savrasov_-_%D0%93%D1%80%D0%B0%D1%87%D0%B8_%D0%BF%D1%80%D0%B8%D0%BB%D0%B5%D1%82%D0%B5%D0%BB%D0%B8_-_Google_Art_Project.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "savrasov-2",
+    "painter": "savrasov",
+    "title": "Просёлок",
+    "date": "1873",
+    "image": "/artworks/savrasov-2.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Savrasov_Proselok_1873.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "shishkin-1",
+    "painter": "shishkin",
+    "title": "Рожь",
+    "date": "1878",
+    "image": "/artworks/shishkin-1.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Ivan_Shishkin_-_%D0%A0%D0%BE%D0%B6%D1%8C_-_Google_Art_Project.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "shishkin-2",
+    "painter": "shishkin",
+    "title": "На севере диком",
+    "date": "1891",
+    "image": "/artworks/shishkin-2.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Shishkin_na_severe_dikom1.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "perov-1",
+    "painter": "perov",
+    "title": "Тройка",
+    "date": "1866",
+    "image": "/artworks/perov-1.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:%D0%A2%D1%80%D0%BE%D0%B9%D0%BA%D0%B0_-_%D0%92%D0%B0%D1%81%D0%B8%D0%BB%D0%B8%D0%B9_%D0%93%D1%80%D0%B8%D0%B3%D0%BE%D1%80%D1%8C%D0%B5%D0%B2%D0%B8%D1%87_%D0%9F%D0%B5%D1%80%D0%BE%D0%B2_(1866).jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "perov-2",
+    "painter": "perov",
+    "title": "Охотники на привале",
+    "date": "1871",
+    "image": "/artworks/perov-2.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Wassili_Grigorjewitsch_Perow_-_Hunters_resting.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "kramskoy-1",
+    "painter": "kramskoy",
+    "title": "Неизвестная",
+    "date": "1883",
+    "image": "/artworks/kramskoy-1.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Kramskoy_Portrait_of_a_Woman.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "kramskoy-2",
+    "painter": "kramskoy",
+    "title": "Христос в пустыне",
+    "date": "1872",
+    "image": "/artworks/kramskoy-2.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Ivan_Kramskoy_-_%D0%A5%D1%80%D0%B8%D1%81%D1%82%D0%BE%D1%81_%D0%B2_%D0%BF%D1%83%D1%81%D1%82%D1%8B%D0%BD%D0%B5_-_Google_Art_Project.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "kuindzhi-1",
+    "painter": "kuindzhi",
+    "title": "Лунная ночь на Днепре",
+    "date": "1880",
+    "image": "/artworks/kuindzhi-1.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Kuindzhi_Moonlit_night_on_the_Dnieper_1880_grm_x2.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "kuindzhi-2",
+    "painter": "kuindzhi",
+    "title": "Берёзовая роща",
+    "date": "1879",
+    "image": "/artworks/kuindzhi-2.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Kuindzhi_Birch_Grove_1879.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "repin-1",
+    "painter": "repin",
+    "title": "Бурлаки на Волге",
+    "date": "1870–1873",
+    "image": "/artworks/repin-1.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Ilya_Repin_-_Barge_Haulers_on_the_Volga_-_Google_Art_Project.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "repin-2",
+    "painter": "repin",
+    "title": "Не ждали",
+    "date": "1884–1888",
+    "image": "/artworks/repin-2.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:They_did_not_Expect_Him.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "surikov-1",
+    "painter": "surikov",
+    "title": "Утро стрелецкой казни",
+    "date": "1881",
+    "image": "/artworks/surikov-1.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Le_matin_de_l%27_ex%C3%A9cution_des_streltsy.jpg",
+    "credit": "Викисклад · Василий Суриков",
+    "license": "CC BY-SA 4.0"
+  },
+  {
+    "id": "surikov-2",
+    "painter": "surikov",
+    "title": "Боярыня Морозова",
+    "date": "1887",
+    "image": "/artworks/surikov-2.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Surikov_Boyarynya_Morozova_gtg.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "vasnetsov-1",
+    "painter": "vasnetsov",
+    "title": "Богатыри",
+    "date": "1898",
+    "image": "/artworks/vasnetsov-1.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:1898_Vasnetsov_Bogatyrs_anagoria.JPG",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "vasnetsov-2",
+    "painter": "vasnetsov",
+    "title": "После побоища Игоря Святославича с половцами",
+    "date": "1880",
+    "image": "/artworks/vasnetsov-2.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:1880_Vasnetsov_Nach_der_Schlacht_von_Igor_anagoria.JPG",
+    "credit": "Викисклад · anagoria",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "vrubel-1",
+    "painter": "vrubel",
+    "title": "Демон сидящий",
+    "date": "1890",
+    "image": "/artworks/vrubel-1.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Mikhail_Vrubel_-_the_Seated_Demon_(sketch).jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "vrubel-2",
+    "painter": "vrubel",
+    "title": "Царевна-Лебедь",
+    "date": "1900",
+    "image": "/artworks/vrubel-2.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Tsarevna-Lebed_by_Mikhail_Vrubel.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "levitan-1",
+    "painter": "levitan",
+    "title": "Над вечным покоем",
+    "date": "1894",
+    "image": "/artworks/levitan-1.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Issak_Levitan_001.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "levitan-2",
+    "painter": "levitan",
+    "title": "Март",
+    "date": "1895",
+    "image": "/artworks/levitan-2.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:March_by_Isaac_Levitan_in_the_State_Tretyakov_Gallery_IMG_6312.jpg",
+    "credit": "Викисклад · Adavyd",
+    "license": "CC BY-SA 4.0"
+  },
+  {
+    "id": "serov-1",
+    "painter": "serov",
+    "title": "Девочка с персиками",
+    "date": "1887",
+    "image": "/artworks/serov-1.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Valentin_Serov_-_%D0%94%D0%B5%D0%B2%D0%BE%D1%87%D0%BA%D0%B0_%D1%81_%D0%BF%D0%B5%D1%80%D1%81%D0%B8%D0%BA%D0%B0%D0%BC%D0%B8._%D0%9F%D0%BE%D1%80%D1%82%D1%80%D0%B5%D1%82_%D0%92.%D0%A1.%D0%9C%D0%B0%D0%BC%D0%BE%D0%BD%D1%82%D0%BE%D0%B2%D0%BE%D0%B9_-_Google_Art_Project.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "serov-2",
+    "painter": "serov",
+    "title": "Пётр I",
+    "date": "1907",
+    "image": "/artworks/serov-2.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Serov_%E2%80%94_Peter_the_Great.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "kandinsky-1",
+    "painter": "kandinsky",
+    "title": "Композиция VII",
+    "date": "1913",
+    "image": "/artworks/kandinsky-1.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Composition_VII_-_Wassily_Kandinsky,_GAC.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "kandinsky-2",
+    "painter": "kandinsky",
+    "title": "Жёлтое — красное — синее",
+    "date": "1925",
+    "image": "/artworks/kandinsky-2.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Kandinsky_-_Jaune_Rouge_Bleu.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "petrov-vodkin-1",
+    "painter": "petrov-vodkin",
+    "title": "Купание красного коня",
+    "date": "1912",
+    "image": "/artworks/petrov-vodkin-1.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Bathing_of_a_Red_Horse_(Petrov-Vodkin).jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "petrov-vodkin-2",
+    "painter": "petrov-vodkin",
+    "title": "1918 год в Петрограде",
+    "date": "1920",
+    "image": "/artworks/petrov-vodkin-2.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Kuzma_petrov-vodkin,_1918_a_petrogrado,_1920.JPG",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "malevich-1",
+    "painter": "malevich",
+    "title": "Чёрный квадрат",
+    "date": "1915",
+    "image": "/artworks/malevich-1.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:%D0%A7%D1%91%D1%80%D0%BD%D1%8B%D0%B9_%D1%81%D1%83%D0%BF%D1%80%D0%B5%D0%BC%D0%B0%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9_%D0%BA%D0%B2%D0%B0%D0%B4%D1%80%D0%B0%D1%82._1915._%D0%93%D0%A2%D0%93.png",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "malevich-2",
+    "painter": "malevich",
+    "title": "Красная конница",
+    "date": "ок. 1932",
+    "image": "/artworks/malevich-2.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Red_Cavalry_Riding.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "goncharova-1",
+    "painter": "goncharova",
+    "title": "Велосипедист",
+    "date": "1913",
+    "image": "/artworks/goncharova-1.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Cyclist_(Goncharova,_1913).jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "goncharova-2",
+    "painter": "goncharova",
+    "title": "Ангелы и аэропланы",
+    "date": "1914",
+    "image": "/artworks/goncharova-2.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Mystical_Images_of_War_-_11.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "serebryakova-1",
+    "painter": "serebryakova",
+    "title": "За туалетом. Автопортрет",
+    "date": "1909",
+    "image": "/artworks/serebryakova-1.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Sinaida_Jewgenjewna_Serebrjakowa_At_the_Dressing-Table_1909.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "serebryakova-2",
+    "painter": "serebryakova",
+    "title": "За завтраком",
+    "date": "1914",
+    "image": "/artworks/serebryakova-2.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Zinaida_Serebryakova_(1914)_At_Breakfast.jpg",
+    "credit": "Викисклад",
+    "license": "Общественное достояние"
+  },
+  {
+    "id": "chagall-1",
+    "painter": "chagall",
+    "title": "Над городом",
+    "date": "1914–1918",
+    "image": "/artworks/chagall-1.jpg",
+    "source": "https://tretyakovgallerymagazine.ru/catalog/picture/13601",
+    "credit": "Журнал «Третьяковская галерея»",
+    "license": "© автор / правообладатели"
+  },
+  {
+    "id": "chagall-2",
+    "painter": "chagall",
+    "title": "Я и деревня",
+    "date": "1911",
+    "image": "/artworks/chagall-2.jpg",
+    "source": "https://ru.wikipedia.org/wiki/Я_и_деревня",
+    "credit": "Википедия",
+    "license": "© автор / правообладатели"
+  },
+  {
+    "id": "plastov-1",
+    "painter": "plastov",
+    "title": "Жатва",
+    "date": "1945",
+    "image": "/artworks/plastov-1.jpg",
+    "source": "https://rusmuseumvrm.ru/data/events/2017/05/lekciya__arkadiy_plastov_kartini_voennih_let/index.php",
+    "credit": "Русский музей",
+    "license": "© автор / правообладатели"
+  },
+  {
+    "id": "plastov-2",
+    "painter": "plastov",
+    "title": "Фашист пролетел",
+    "date": "1942",
+    "image": "/artworks/plastov-2.jpg",
+    "source": "https://rusmuseumvrm.ru/data/events/2017/05/lekciya__arkadiy_plastov_kartini_voennih_let/index.php",
+    "credit": "Русский музей",
+    "license": "© автор / правообладатели"
+  },
+  {
+    "id": "deineka-1",
+    "painter": "deineka",
+    "title": "Оборона Петрограда",
+    "date": "1928",
+    "image": "/artworks/deineka-1.jpg",
+    "source": "https://www.izbaarts.com/deineka-samokhvalov-exhibition-in-st-petersburg/",
+    "credit": "Выставка Дейнеки · Изба Артс",
+    "license": "© автор / правообладатели"
+  },
+  {
+    "id": "deineka-2",
+    "painter": "deineka",
+    "title": "Оборона Севастополя",
+    "date": "1942",
+    "image": "/artworks/deineka-2.jpg",
+    "source": "https://www.rmgallery.rusmuseumvrm.ru/ru/992",
+    "credit": "Русский музей",
+    "license": "© автор / правообладатели"
+  },
+  {
+    "id": "pimenov-1",
+    "painter": "pimenov",
+    "title": "Новая Москва",
+    "date": "1937",
+    "image": "/artworks/pimenov-1.jpg",
+    "source": "https://ru.wikipedia.org/wiki/Новая_Москва_(картина)",
+    "credit": "Википедия",
+    "license": "© автор / правообладатели"
+  },
+  {
+    "id": "pimenov-2",
+    "painter": "pimenov",
+    "title": "Свадьба на завтрашней улице",
+    "date": "1962",
+    "image": "/artworks/pimenov-2.jpg",
+    "source": "https://moscowchronology.ru/Pimenov_Svadba_na_zavtrashney_ulice.html",
+    "credit": "Хронология Москвы",
+    "license": "© автор / правообладатели"
+  },
+  {
+    "id": "korzhev-1",
+    "painter": "korzhev",
+    "title": "Поднимающий знамя",
+    "date": "1960",
+    "image": "/artworks/korzhev-1.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:%D0%A2%D1%80%D0%B8%D0%BF%D1%82%D0%B8%D1%85_%D0%9A%D0%BE%D0%BC%D0%BC%D1%83%D0%BD%D0%B8%D1%81%D1%82%D1%8B._%D0%9F%D0%BE%D0%B4%D0%BD%D0%B8%D0%BC%D0%B0%D1%8E%D1%89%D0%B8%D0%B9_%D0%B7%D0%BD%D0%B0%D0%BC%D1%8F_(%D1%86%D0%B5%D0%BD%D1%82%D1%80%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0%D1%8F_%D1%87%D0%B0%D1%81%D1%82%D1%8C)._1959-1960%D0%B3..jpg",
+    "credit": "Викисклад · Гелий Коржев",
+    "license": "CC BY-SA 4.0"
+  },
+  {
+    "id": "korzhev-2",
+    "painter": "korzhev",
+    "title": "Следы войны",
+    "date": "1965",
+    "image": "/artworks/korzhev-2.jpg",
+    "source": "https://rusmuseumvrm.ru/data/collections/painting/19_20/zh_8611/index.php",
+    "credit": "Русский музей",
+    "license": "© автор / правообладатели"
+  }
+]

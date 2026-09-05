@@ -166,7 +166,7 @@ h1 em {
   inset: 0;
   background: linear-gradient(transparent 50%, #201b17a6);
 }
-figcaption {
+.historical-image figcaption {
   position: absolute;
   bottom: 13px;
   left: 17px;
@@ -1163,4 +1163,173 @@ summary {
 }
 .painters-heading select {
   width: 100%;
+}
+
+.events-section {
+  border-top: 1px solid #ddd3bf;
+  background: #f7f0e1;
+}
+.events-section .eyebrow,
+.events-section .painter-note,
+.events-section .painters-empty {
+  color: #796239;
+}
+.events-section .painter-axis {
+  background: #f7f0e1;
+}
+.events-viewport {
+  min-height: 100px;
+  max-height: 250px;
+  overscroll-behavior: contain;
+}
+.events-track {
+  height: 120px;
+}
+.historical-event {
+  position: absolute;
+  height: 54px;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: #644815;
+  cursor: pointer;
+}
+.event-duration {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 4px;
+  background: #ac7c35;
+  border-radius: 2px;
+}
+.point-event .event-duration {
+  width: 8px !important;
+  height: 8px;
+  border-radius: 50%;
+  transform: translateX(-4px);
+}
+.event-label {
+  display: block;
+  padding: 8px 8px 4px;
+  width: 172px;
+  max-width: 100%;
+}
+.event-label strong {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.event-label > span {
+  display: block;
+  font-size: 9px;
+  padding-top: 4px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.historical-event:hover .event-label,
+.historical-event[aria-expanded="true"] .event-label {
+  background: #eddfc2;
+  border-radius: 4px;
+}
+#artwork-gallery {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 16px 0;
+}
+#artwork-gallery[hidden] {
+  display: none;
+}
+#artwork-gallery figure {
+  margin: 0;
+  min-width: 0;
+}
+#artwork-gallery img {
+  display: block;
+  width: 100%;
+  height: 130px;
+  object-fit: contain;
+  background: #ede8dd;
+  border: 1px solid #ded7c8;
+  border-radius: 3px;
+}
+#artwork-gallery img[hidden] {
+  display: none;
+}
+#artwork-gallery figcaption {
+  padding: 7px 0 0;
+  line-height: 1.45;
+}
+#artwork-gallery figcaption strong {
+  display: block;
+  font-size: 11px;
+}
+#artwork-gallery figcaption > span {
+  display: block;
+  font-size: 10px;
+  color: #726957;
+}
+#artwork-gallery .art-credit {
+  display: block;
+  margin-top: 6px;
+  font-size: 9px;
+  color: #746e62;
+  overflow-wrap: anywhere;
+}
+#artwork-gallery .art-with-note {
+  grid-column: 1 / -1;
+}
+#artwork-gallery .art-with-note img {
+  height: 180px;
+}
+#artwork-gallery figcaption p {
+  font-size: 12px;
+  line-height: 1.6;
+}
+#artwork-gallery figcaption button {
+  margin: 5px 0;
+  padding: 7px 0;
+  border: 0;
+  background: transparent;
+  color: #416b52;
+  font-size: 11px;
+  cursor: pointer;
+}
+#related-events {
+  margin-top: 14px;
+  border-top: 1px solid #ddd7cb;
+  padding-top: 12px;
+}
+#related-events summary {
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+}
+#event-links {
+  display: grid;
+  gap: 6px;
+  margin-top: 10px;
+  font-size: 12px;
+}
+#event-links button {
+  min-height: 44px;
+  padding: 9px;
+  border: 1px solid #ddd0b6;
+  border-radius: 4px;
+  background: #f6eddc;
+  color: #674c24;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+@media (min-width: 641px) {
+  .ruler-preview {
+    max-height: min(620px, calc(100dvh - 24px));
+  }
 }

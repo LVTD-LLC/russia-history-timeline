@@ -1,6 +1,6 @@
 # Product
 
-A Russian-only educational atlas comparing rulers of Rus and Russia with painters connected to its history.
+A Russian-only educational atlas comparing rulers of Rus and Russia with major historical events and painters connected to its history.
 
 ## Core workflow
 
@@ -12,4 +12,8 @@ A Russian-only educational atlas comparing rulers of Rus and Russia with painter
 
 ## Scope
 
-One historical ruler line plus a curated painter-lifespan lane, Russian summaries, accessible desktop and phone interactions. Overlapping lives use separate rows within the painters lane; both timelines share zoom and horizontal navigation. Lifespans include childhood and years abroad, not just an artistic career or residence in Russia. Earlier medieval rulers are selected highlights; interruptions and co-rule are explained rather than represented as additional lanes. Modern entries include political leaders, not exclusively formal heads of state. No separate events feed, English version, accounts, map, or CMS.
+One historical ruler line plus major-event and curated painter-lifespan lanes, Russian summaries, accessible desktop and phone interactions. Overlapping lives use separate rows within the painters lane; all three timelines share zoom and horizontal navigation. Lifespans include childhood and years abroad, not just an artistic career or residence in Russia. Earlier medieval rulers are selected highlights; interruptions and co-rule are explained rather than represented as additional lanes. Modern entries include political leaders, not exclusively formal heads of state. Events occupy a synchronized lane between rulers and painters; there is no separate news feed, English version, accounts, map, or CMS.
+
+## Art and events
+
+Each painter card includes two attributed artwork previews. Event cards link to overlapping rulers and, where verified, artworks by featured painters. Links explicitly distinguish contemporary responses, later depictions, and broader social context. No artwork relationship is inferred from lifespan overlap alone.
