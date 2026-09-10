@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-10 — Unified timeline and linked detail drawer
+
+- Combined rulers, events, and painters in one scrollable timeline with collision-free rows, consistent cards, category colors, and a Russian legend.
+- Replaced hover/focus previews with click-open details sliding in from the right: half-width on desktop and full-width on phones.
+- Added static, shareable entry URLs with reload and Back/Forward support, modal keyboard focus, Escape dismissal, and focus restoration.
+- Preserved chronology, galleries, contemporary links, selectors, and all eight zoom levels; updated desktop and mobile interaction coverage.
+
 ## 2026-09-05 — Artwork previews and major events
 
 - Added two attributed artwork previews per painter (72 local, optimized reproductions), with creation dates and source links.

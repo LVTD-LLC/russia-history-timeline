@@ -19,16 +19,15 @@ test("lifespans retain their full length and overlapping painters get separate r
     for (const b of rows)
       if (a.painter.id !== b.painter.id && overlaps(a.painter, b.painter))
         expect(a.row).not.toBe(b.row);
-  await expect(page.locator("#painters-empty")).toBeVisible();
-  await page.locator('[data-painter-year="1840"]').click();
-  await expect(page.locator("#painters-empty")).toBeHidden();
+  await page.locator("#painter-picker").selectOption("repin");
+  await page.keyboard.press("Escape");
   const bands = await page
     .locator("[data-painter]:visible")
     .evaluateAll((nodes) =>
       nodes.map((n) => ({
         x: n.getBoundingClientRect().x,
         y: n.getBoundingClientRect().y,
-        width: n.getBoundingClientRect().width,
+        width: n.querySelector(".card-duration")!.getBoundingClientRect().width,
         start: Number((n as HTMLElement).dataset.start),
         end: Number((n as HTMLElement).dataset.end),
       })),
@@ -38,39 +37,6 @@ test("lifespans retain their full length and overlapping painters get separate r
     for (const b of bands)
       if (a !== b && overlaps(a, b)) expect(a.y).not.toBe(b.y);
   }
-});
-
-test("both scroll directions and every zoom keep year coordinates aligned", async ({
-  page,
-}) => {
-  const alignment = async () =>
-    page.evaluate(() => {
-      const a = document.getElementById("timeline")!,
-        b = document.getElementById("painters-timeline")!;
-      const x = document
-        .querySelector('#timeline-track [data-year="1900"]')!
-        .getBoundingClientRect().x;
-      const y = document
-        .querySelector('#painters-track [data-year="1900"]')!
-        .getBoundingClientRect().x;
-      return Math.max(Math.abs(a.scrollLeft - b.scrollLeft), Math.abs(x - y));
-    });
-  await page.locator('[data-painter-year="1910"]').click();
-  for (let z = 0; z < 8; z++) {
-    await page.locator("#zoom").fill(String(z));
-    await expect.poll(alignment).toBeLessThan(2);
-    await page
-      .locator("#painters-timeline")
-      .evaluate((el) => (el.scrollLeft -= 137));
-    await expect.poll(alignment).toBeLessThan(2);
-    await page.locator("#timeline").evaluate((el) => (el.scrollLeft += 81));
-    await expect.poll(alignment).toBeLessThan(2);
-  }
-  expect(
-    await page.evaluate(
-      () => document.documentElement.scrollWidth <= innerWidth,
-    ),
-  ).toBe(true);
 });
 
 test("painter cards explain residence, navigate and link to contemporary rulers", async ({
@@ -95,6 +61,7 @@ test("painter cards explain residence, navigate and link to contemporary rulers"
   await expect(page.locator("#preview-name")).toHaveText("Фёдор Рокотов");
   await page.getByRole("button", { name: "Следующий художник" }).click();
   await expect(page.locator("#preview-name")).toHaveText("Дмитрий Левицкий");
+  await expect(page.getByRole("dialog")).toBeInViewport({ ratio: 1 });
   const box = await page.getByRole("dialog").boundingBox();
   const size = page.viewportSize()!;
   expect(box!.x).toBeGreaterThanOrEqual(0);
@@ -105,40 +72,43 @@ test("painter cards explain residence, navigate and link to contemporary rulers"
   await expect(page.locator('[data-painter="levitsky"]')).toBeFocused();
 });
 
-test("painter bars support touch or hover, keyboard and dense vertical scrolling", async ({
+test("painter bars support touch or click, keyboard and dense vertical scrolling", async ({
   page,
   isMobile,
 }) => {
-  await page.locator('[data-painter-year="1360"]').click();
+  await page.locator("#painter-picker").selectOption("rublev");
+  await page.keyboard.press("Escape");
   const bar = page.locator('[data-painter="rublev"]');
   if (isMobile) await bar.tap();
-  else await bar.hover();
+  else await bar.click();
   await expect(page.locator("#preview-name")).toHaveText("Андрей Рублёв");
   await page.keyboard.press("Escape");
   await bar.focus();
   await page.keyboard.press("ArrowRight");
+  await page.keyboard.press("Enter");
   await expect(page.locator("#preview-name")).toHaveText("Симон Ушаков");
   await page.keyboard.press("Escape");
   await page.locator("#painter-picker").selectOption("chagall");
   await expect(page.locator("#preview-name")).toHaveText("Марк Шагал");
   await page.keyboard.press("Escape");
   expect(
-    await page.locator("#painters-timeline").evaluate((el) => el.scrollTop),
+    await page.locator("#timeline").evaluate((el) => el.scrollTop),
   ).toBeGreaterThan(0);
   await page.locator('[data-painter="chagall"]').click();
   await expect(page.getByRole("dialog")).toBeVisible();
   await expect(page.locator("#preview-accession")).toContainText("1922");
 });
 
-test("touch swipe on painters moves the rulers too", async ({
+test("touch swipe moves the shared timeline without opening details", async ({
   page,
   isMobile,
   context,
 }) => {
   test.skip(!isMobile, "Touch gesture is exercised on phones");
-  await page.locator('[data-painter-year="1840"]').tap();
-  await page.locator("#painters-timeline").scrollIntoViewIfNeeded();
-  const box = (await page.locator("#painters-timeline").boundingBox())!;
+  await page.locator("#painter-picker").selectOption("repin");
+  await page.keyboard.press("Escape");
+  await page.locator("#timeline").scrollIntoViewIfNeeded();
+  const box = (await page.locator("#timeline").boundingBox())!;
   const before = await page
     .locator("#timeline")
     .evaluate((el) => el.scrollLeft);
@@ -161,15 +131,6 @@ test("touch swipe on painters moves the rulers too", async ({
   await expect
     .poll(() => page.locator("#timeline").evaluate((el) => el.scrollLeft))
     .toBeGreaterThan(before + 30);
-  await expect
-    .poll(() =>
-      page.evaluate(() =>
-        Math.abs(
-          document.getElementById("timeline")!.scrollLeft -
-            document.getElementById("painters-timeline")!.scrollLeft,
-        ),
-      ),
-    )
-    .toBeLessThan(2);
+  await expect(page.getByRole("dialog")).toBeHidden();
   await cdp.detach();
 });

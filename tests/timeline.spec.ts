@@ -4,12 +4,14 @@ test.beforeEach(async ({ page }) => {
   await page.goto("/");
 });
 
-test("Russian-only, one lane, no document overflow", async ({ page }) => {
+test("Russian-only, one shared canvas, no document overflow", async ({
+  page,
+}) => {
   await expect(page.locator("html")).toHaveAttribute("lang", "ru");
   await expect(
     page.getByRole("heading", { name: "Правители России", exact: true }),
   ).toBeVisible();
-  await expect(page.locator(".ruler-line")).toHaveCount(1);
+  await expect(page.locator(".timeline-viewport")).toHaveCount(1);
   await expect(page.locator("[data-ruler]")).toHaveCount(84);
   await expect(page.locator("body")).not.toContainText("English");
   expect(
@@ -22,7 +24,7 @@ test("Russian-only, one lane, no document overflow", async ({ page }) => {
     .evaluateAll(
       (nodes) => new Set(nodes.map((n) => n.getBoundingClientRect().top)).size,
     );
-  expect(rows).toBe(1);
+  expect(rows).toBeGreaterThan(1);
 });
 
 test("tap or click opens a card, navigates and closes", async ({
@@ -36,6 +38,7 @@ test("tap or click opens a card, navigates and closes", async ({
   await expect(card).toBeVisible();
   await expect(card.getByRole("heading")).toHaveText("Рюрик");
   await expect(card.locator("#preview-intro")).toContainText("Рюриковичей");
+  await expect(page.getByRole("dialog")).toBeInViewport({ ratio: 1 });
   const box = await card.boundingBox();
   const viewport = page.viewportSize()!;
   expect(box!.x).toBeGreaterThanOrEqual(0);
@@ -103,24 +106,87 @@ test("era navigation and keyboard cards", async ({ page }) => {
     .poll(() => page.locator("#timeline").evaluate((el) => el.scrollLeft))
     .toBeGreaterThan(6000);
   await page.locator("#rurik").focus();
-  await expect(page.locator("#preview-name")).toHaveText("Рюрик");
+  await expect(page.getByRole("dialog")).toBeHidden();
   await page.keyboard.press("ArrowRight");
+  await page.keyboard.press("Enter");
   await expect(page.locator("#preview-name")).toHaveText("Олег Вещий");
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).toBeHidden();
 });
 
-test("mouse hover card remains available when moving into it", async ({
+test("hover and keyboard focus never open details", async ({
   page,
   isMobile,
 }) => {
-  test.skip(isMobile, "Hover is a desktop interaction");
-  await page.locator("#rurik").hover();
+  for (const id of ["rurik", "rublev", "ww2"]) {
+    await page.goto(`/${id}/`);
+    await expect(page.getByRole("dialog")).toBeVisible();
+    await page.getByRole("button", { name: "Закрыть справку" }).click();
+    const card = page.locator(`#${id}`);
+    await card.focus();
+    await expect(page.getByRole("dialog")).toBeHidden();
+    if (!isMobile) {
+      await card.hover();
+      await expect(page.getByRole("dialog")).toBeHidden();
+    }
+    await card.press("Enter");
+    await expect(page.getByRole("dialog")).toBeVisible();
+  }
+});
+
+test("drawer URLs survive reload and Back/Forward; closing preserves the timeline", async ({
+  page,
+  isMobile,
+}) => {
+  await page.locator("#painter-picker").selectOption("repin");
+  await expect(page).toHaveURL(/\/repin\/$/);
   await expect(page.getByRole("dialog")).toBeVisible();
-  await page.getByRole("dialog").hover();
-  await expect(page.locator("#preview-intro")).toBeVisible();
-  await page
-    .getByRole("heading", { name: "Правители России", exact: true })
-    .hover();
+  await page.goBack();
   await expect(page.getByRole("dialog")).toBeHidden();
+  const position = await page
+    .locator("#timeline")
+    .evaluate((el) => [el.scrollLeft, el.scrollTop]);
+  await page.locator("#repin").click({ position: { x: 20, y: 20 } });
+  await expect(page.getByRole("dialog")).toBeVisible();
+  await expect(page.getByRole("dialog")).toBeInViewport({ ratio: 1 });
+  const box = await page.getByRole("dialog").boundingBox();
+  expect(box!.width).toBe(page.viewportSize()!.width * (isMobile ? 1 : 0.5));
+  expect(box!.height).toBe(page.viewportSize()!.height);
+  await page.getByRole("button", { name: "Закрыть справку" }).click();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.getByRole("dialog")).toBeHidden();
+  expect(
+    await page
+      .locator("#timeline")
+      .evaluate((el) => [el.scrollLeft, el.scrollTop]),
+  ).toEqual(position);
+  await page.goForward();
+  await expect(page.locator("#preview-name")).toHaveText("Илья Репин");
+  await expect(page.getByRole("dialog")).toBeVisible();
+  await page.reload();
+  await expect(page.locator("#preview-name")).toHaveText("Илья Репин");
+  await expect(page.getByRole("dialog")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.getByRole("dialog")).toBeHidden();
+});
+
+test("modal keeps keyboard focus inside and backdrop dismisses on desktop", async ({
+  page,
+  isMobile,
+}) => {
+  await page.locator("#rurik").click();
+  await expect(page.locator("#close-preview")).toBeFocused();
+  for (let i = 0; i < 12; i++) {
+    await page.keyboard.press("Tab");
+    expect(
+      await page
+        .getByRole("dialog")
+        .evaluate((el) => el.contains(document.activeElement)),
+    ).toBe(true);
+  }
+  if (!isMobile) await page.mouse.click(20, 20);
+  else await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog")).toBeHidden();
+  await expect(page.locator("#rurik")).toBeFocused();
 });
