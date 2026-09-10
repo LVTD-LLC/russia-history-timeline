@@ -40,11 +40,3 @@ jobs:
 
       - name: Test desktop and mobile interactions
         run: npm test
-
-  deploy:
-    name: Ship main
-    needs: build
-    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
-    uses: ./.github/workflows/deploy.yml
-    secrets:
-      CAPROVER_APP_TOKEN: ${{ secrets.CAPROVER_APP_TOKEN }}

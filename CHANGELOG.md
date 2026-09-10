@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-10 — Standalone CapRover deployment workflow
+
+- Separated Deploy to CapRover from CI into its own Actions run, automatically triggered after CI completes for every main update.
+- Deploy only successful same-repository main push/manual CI runs, using the exact tested commit and existing CAPROVER_APP_TOKEN repository secret.
+- Retained serialized deployments, stale-commit protection, and exact production revision verification; added a deployment summary linking the source CI run.
+
 ## 2026-09-10 — Russia History Timeline naming
 
 - Renamed the site heading, masthead, browser titles, and README to Russia History Timeline to reflect rulers, events, and art together.
