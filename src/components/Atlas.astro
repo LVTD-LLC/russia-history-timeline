@@ -26,22 +26,22 @@ const ticks = Array.from(
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Правители России, важнейшие события и известные художники на общей шкале времени. Сравнивайте эпохи, меняйте масштаб и узнавайте о современниках."
+      content="Russia History Timeline — история России на общей шкале времени: правители, важнейшие события и известные художники. Сравнивайте эпохи, меняйте масштаб и узнавайте о современниках."
     />
     <meta name="theme-color" content="#f6f3ec" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>{selected ? `${selected.name} — Исторический атлас` : "Правители России — линия времени"}</title>
+    <title>{selected ? `${selected.name} — Russia History Timeline` : "Russia History Timeline"}</title>
   </head>
   <body>
     <a class="skip-link" href="#timeline">
       К линии времени
     </a>
     <header class="masthead">
-      <a class="brand" href="/" aria-label="Правители России — главная">
+      <a class="brand" href="/" aria-label="Russia History Timeline — главная">
         <span class="brand-mark" aria-hidden="true">
           Р
         </span>{" "}
-        ИСТОРИЧЕСКИЙ АТЛАС
+        <span lang="en">Russia History Timeline</span>
       </a>
       <span class="edition">ОТ РЮРИКА ДО НАШИХ ДНЕЙ</span>
     </header>
@@ -49,10 +49,10 @@ const ticks = Array.from(
       <section class="intro" aria-labelledby="page-title">
         <div class="intro-copy">
           <p class="eyebrow">
-            <span></span> 862 — {new Date().getFullYear()} · ЛЮДИ И ВЛАСТЬ
+            <span></span> 862 — {new Date().getFullYear()} · ЛЮДИ, СОБЫТИЯ И ИСКУССТВО
           </p>
-          <h1 id="page-title">
-            Правители <em>России</em>
+          <h1 id="page-title" lang="en">
+            Russia History <em>Timeline</em>
           </h1>
           <p class="lead">
             Власть, события и живопись на одной шкале времени.

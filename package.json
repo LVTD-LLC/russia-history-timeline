@@ -3,7 +3,7 @@
   "type": "module",
   "version": "0.1.0",
   "private": true,
-  "description": "Russian-language interactive timeline of the rulers of Rus and Russia",
+  "description": "Russia History Timeline: a Russian-language interactive timeline of rulers, events, and painters",
   "engines": {
     "node": ">=22.12.0"
   },

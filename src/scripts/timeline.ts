@@ -79,7 +79,7 @@ function revealDetails() {
   }
   element("close-preview").focus({ preventScroll: true });
   const id = activeButton().id;
-  document.title = `${element("preview-name").textContent} — Исторический атлас`;
+  document.title = `${element("preview-name").textContent} — Russia History Timeline`;
   if (!readingHistory && location.pathname !== `/${id}/`) {
     // Related entries replace the detail URL so Back returns straight to the timeline.
     if (wasOpen)
@@ -99,7 +99,7 @@ function closePreview(restoreFocus = true, updateHistory = true) {
   document.body.classList.remove("details-open");
   previous?.setAttribute("aria-expanded", "false");
   active = activePainter = activeEvent = -1;
-  document.title = "Правители России — линия времени";
+  document.title = "Russia History Timeline";
   if (updateHistory) {
     if (history.state?.timelineDrawer) history.back();
     else history.replaceState(null, "", `/${location.search}`);
