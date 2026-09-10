@@ -4,7 +4,7 @@ This file is for coding agents working on `russia-history-timeline`.
 
 ## Project Summary
 
-This is a Russian-only Astro 7 static historical atlas with one horizontal line of rulers of Rus and Russia and synchronized major-event and painter-lifespan lanes. The main product surface is `src/pages/index.astro`, backed by timeline content in `src/data/timeline.ts`.
+This is a Russian-only Astro 7 static historical atlas with one shared horizontal time canvas containing rulers, major events, and painter lifespans in non-overlapping rows. The main product surface is `src/components/Atlas.astro`, backed by timeline content in `src/data/timeline.ts`.
 
 ## Commands
 
@@ -43,7 +43,7 @@ npm run preview
 ## Structure
 
 - `src/data/timeline.ts` contains Russian ruler summaries and numeric date ranges.
-- `src/pages/index.astro` renders the page; `src/styles/timeline.css` and `src/scripts/timeline.ts` own styling and interaction.
+- `src/components/Atlas.astro` renders the shared page at `/` and `/<entry-id>/`; `src/styles/timeline.css` and `src/scripts/timeline.ts` own styling and interaction.
 - `npm test` runs Playwright interaction checks for desktop and mobile.
 - `public/` contains static assets served at the site root.
 - `Dockerfile`, `nginx.conf`, and `captain-definition` define CapRover deployment.

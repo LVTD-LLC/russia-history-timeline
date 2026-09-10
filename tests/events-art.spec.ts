@@ -39,47 +39,6 @@ test("every painter has two real, loadable artworks with attribution", async ({
   }
 });
 
-test("events sit between rulers and painters and all three scrollports align at all zooms", async ({
-  page,
-}) => {
-  const order = await page.evaluate(() =>
-    ["timeline", "events-timeline", "painters-timeline"].map(
-      (id) => document.getElementById(id)!.getBoundingClientRect().top,
-    ),
-  );
-  expect(order[0]).toBeLessThan(order[1]);
-  expect(order[1]).toBeLessThan(order[2]);
-  await page.locator("#event-picker").selectOption("ww1");
-  await page.keyboard.press("Escape");
-  const alignment = () =>
-    page.evaluate(() => {
-      const positions = [
-        "timeline-track",
-        "events-track",
-        "painters-track",
-      ].map(
-        (id) =>
-          document
-            .querySelector(`#${id} [data-year="1900"]`)!
-            .getBoundingClientRect().x,
-      );
-      return Math.max(...positions) - Math.min(...positions);
-    });
-  for (let z = 0; z < 8; z++) {
-    await page.locator("#zoom").fill(String(z));
-    await expect.poll(alignment).toBeLessThan(2);
-    for (const id of ["timeline", "events-timeline", "painters-timeline"]) {
-      await page.locator("#" + id).evaluate((el) => (el.scrollLeft += 65));
-      await expect.poll(alignment).toBeLessThan(2);
-    }
-  }
-  expect(
-    await page.evaluate(
-      () => document.documentElement.scrollWidth <= innerWidth,
-    ),
-  ).toBe(true);
-});
-
 test("events distinguish world war dates and later artistic depictions, linking to rulers and authors", async ({
   page,
 }) => {
@@ -109,6 +68,7 @@ test("events distinguish world war dates and later artistic depictions, linking 
   await expect(page.locator("#preview-accession")).toContainText(
     "часть Второй мировой",
   );
+  await page.keyboard.press("Escape");
   await page.locator("#event-picker").selectOption("streltsy");
   await expect(page.locator("#preview-dates")).toHaveText("1698");
   await expect(page.locator("#artwork-gallery")).toContainText("1881");
@@ -126,7 +86,7 @@ test("events distinguish world war dates and later artistic depictions, linking 
   );
 });
 
-test("event cards support touch/hover, keyboard, scrolling and fixed close controls", async ({
+test("event cards support touch/click, keyboard, scrolling and fixed close controls", async ({
   page,
   isMobile,
 }) => {
@@ -135,13 +95,13 @@ test("event cards support touch/hover, keyboard, scrolling and fixed close contr
   const bar = page.locator('[data-event="great-patriotic"]');
   if (isMobile) await bar.tap();
   else {
-    await bar.hover();
-    await page.getByRole("dialog").hover();
+    await bar.click();
   }
   await expect(page.locator("#preview-name")).toHaveText(
     "Великая Отечественная война",
   );
   await page.locator("#preview-departure").scrollIntoViewIfNeeded();
+  await expect(page.getByRole("dialog")).toBeInViewport({ ratio: 1 });
   const card = await page.getByRole("dialog").boundingBox();
   const size = page.viewportSize()!;
   expect(card!.x).toBeGreaterThanOrEqual(0);
@@ -151,6 +111,7 @@ test("event cards support touch/hover, keyboard, scrolling and fixed close contr
   await expect(page.getByRole("dialog")).toBeHidden();
   await expect(bar).toBeFocused();
   await page.keyboard.press("ArrowRight");
+  await page.keyboard.press("Enter");
   await expect(page.locator("#preview-name")).toHaveText("Блокада Ленинграда");
   await expect(page.locator("#artwork-gallery")).toBeHidden();
   await expect(page.locator("#preview-departure")).toContainText(
@@ -158,29 +119,32 @@ test("event cards support touch/hover, keyboard, scrolling and fixed close contr
   );
 });
 
-test("dense event labels do not collide and point events stay selectable", async ({
+test("cards across every category do not collide and point events stay selectable", async ({
   page,
 }) => {
   await page.locator("#event-picker").selectOption("october-1917");
   await page.keyboard.press("Escape");
-  for (const zoom of ["0", "2", "7"]) {
+  for (const zoom of ["0", "1", "2", "3", "4", "5", "6", "7"]) {
     await page.locator("#zoom").fill(zoom);
     const rects = await page
-      .locator("[data-event]:visible .event-label")
+      .locator(".timeline-card")
       .evaluateAll((nodes) =>
         nodes.map((n) => n.getBoundingClientRect().toJSON()),
       );
+    const collisions = [];
     for (let a = 0; a < rects.length; a++)
       for (let b = a + 1; b < rects.length; b++) {
         const x = rects[a],
           y = rects[b];
-        expect(
+        if (!(
           x.right <= y.left ||
-            y.right <= x.left ||
-            x.bottom <= y.top ||
-            y.bottom <= x.top,
-        ).toBe(true);
+          y.right <= x.left ||
+          x.bottom <= y.top ||
+          y.bottom <= x.top
+        ))
+          collisions.push([a, b]);
       }
+    expect(collisions).toEqual([]);
   }
   await page.locator("#event-picker").selectOption("gagarin");
   await expect(page.locator("#preview-name")).toHaveText(

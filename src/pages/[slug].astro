@@ -1,0 +1,13 @@
+---
+import Atlas from "../components/Atlas.astro";
+import { entries } from "../data/entries";
+export function getStaticPaths() {
+  return entries.map((selected) => ({
+    params: { slug: selected.id },
+    props: { selected },
+  }));
+}
+const { selected } = Astro.props;
+---
+
+<Atlas selected={selected} />
