@@ -4,12 +4,12 @@ test.beforeEach(async ({ page }) => {
   await page.goto("/");
 });
 
-test("Russian-only, one shared canvas, no document overflow", async ({
+test("Russian-language atlas, one shared canvas, no document overflow", async ({
   page,
 }) => {
   await expect(page.locator("html")).toHaveAttribute("lang", "ru");
   await expect(
-    page.getByRole("heading", { name: "Правители России", exact: true }),
+    page.getByRole("heading", { name: "Russia History Timeline", exact: true }),
   ).toBeVisible();
   await expect(page.locator(".timeline-viewport")).toHaveCount(1);
   await expect(page.locator("[data-ruler]")).toHaveCount(84);

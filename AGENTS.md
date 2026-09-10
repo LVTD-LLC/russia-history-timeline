@@ -4,7 +4,7 @@ This file is for coding agents working on `russia-history-timeline`.
 
 ## Project Summary
 
-This is a Russian-only Astro 7 static historical atlas with one shared horizontal time canvas containing rulers, major events, and painter lifespans in non-overlapping rows. The main product surface is `src/components/Atlas.astro`, backed by timeline content in `src/data/timeline.ts`.
+Russia History Timeline is a Russian-language Astro 7 static historical atlas with one shared horizontal time canvas containing rulers, major events, and painter lifespans in non-overlapping rows. The main product surface is `src/components/Atlas.astro`, backed by timeline content in `src/data/timeline.ts`.
 
 ## Commands
 
@@ -35,7 +35,7 @@ npm run preview
 ## Workflow
 
 - Do not commit directly to `main`; create a branch and PR.
-- Keep all public-facing content and accessibility labels in Russian.
+- Keep historical content, controls, and accessibility labels in Russian; the product name is “Russia History Timeline”.
 - Keep historical claims concise and date-led. If adding contested interpretation, phrase it as interpretation rather than certainty.
 - Update `CHANGELOG.md` for shipped changes.
 - Before merge, run `npm run build` and use the Greptile/check-pr gate when configured on the PR.

@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-09-10 — Russia History Timeline naming
+
+- Renamed the site heading, masthead, browser titles, and README to Russia History Timeline to reflect rulers, events, and art together.
+- Updated the site description and package summary while retaining Russian historical content and controls.
+
 ## 2026-09-10 — Automatic production deployment
 
 - Added a CI-gated CapRover deployment for every main-branch update, plus manual CI/redeploy support.
