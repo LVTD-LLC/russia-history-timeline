@@ -31,6 +31,9 @@ jobs:
 
       - name: Skip superseded commits
         id: current
+        timeout-minutes: 1
+        env:
+          GIT_TERMINAL_PROMPT: "0"
         shell: bash
         run: |
           latest_sha=$(git ls-remote origin refs/heads/main | cut -f1)
