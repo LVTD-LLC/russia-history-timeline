@@ -1,0 +1,67 @@
+name: Deploy to CapRover
+
+on:
+  workflow_call:
+    secrets:
+      CAPROVER_APP_TOKEN:
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: caprover-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy and verify production
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CAPROVER_SERVER: https://captain.cap.gregagi.com
+      CAPROVER_APP_NAME: russia-history-timeline
+      PRODUCTION_URL: https://russia-history-timeline.cap.gregagi.com
+    steps:
+      - name: Checkout tested commit
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Skip superseded commits
+        id: current
+        timeout-minutes: 1
+        env:
+          GIT_TERMINAL_PROMPT: "0"
+        shell: bash
+        run: |
+          latest_sha=$(git ls-remote origin refs/heads/main | cut -f1)
+          if [ "$latest_sha" = "$GITHUB_SHA" ]; then
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::A newer main commit exists; this deployment is skipped."
+          fi
+
+      - name: Set up Node
+        if: steps.current.outputs.deploy == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Package tracked source and revision marker
+        if: steps.current.outputs.deploy == 'true'
+        shell: bash
+        run: |
+          staging_dir="$RUNNER_TEMP/caprover-source"
+          mkdir -p "$staging_dir"
+          git archive "$GITHUB_SHA" | tar -x -C "$staging_dir"
+          printf '%s\n' "$GITHUB_SHA" > "$staging_dir/public/deploy-revision.txt"
+          tar -cf "$RUNNER_TEMP/deploy.tar" -C "$staging_dir" .
+
+      - name: Deploy and wait for the tested revision to be live
+        if: steps.current.outputs.deploy == 'true'
+        env:
+          CAPROVER_APP_TOKEN: ${{ secrets.CAPROVER_APP_TOKEN }}
+        run: node scripts/deploy-caprover.mjs "$RUNNER_TEMP/deploy.tar" "$GITHUB_SHA"
