@@ -2,9 +2,13 @@ name: CI
 
 on:
   pull_request:
+  workflow_dispatch:
   push:
     branches:
       - main
+
+permissions:
+  contents: read
 
 jobs:
   build:
@@ -25,6 +29,9 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      - name: Test deployment failure and rollout handling
+        run: node --test scripts/deploy-caprover.test.mjs
+
       - name: Build
         run: npm run build
 
@@ -33,3 +40,11 @@ jobs:
 
       - name: Test desktop and mobile interactions
         run: npm test
+
+  deploy:
+    name: Ship main
+    needs: build
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    uses: ./.github/workflows/deploy.yml
+    secrets:
+      CAPROVER_APP_TOKEN: ${{ secrets.CAPROVER_APP_TOKEN }}

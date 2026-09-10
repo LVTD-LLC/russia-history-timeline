@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-10 — Automatic production deployment
+
+- Added a CI-gated CapRover deployment for every main-branch update, plus manual CI/redeploy support.
+- Serialized deployments, skipped superseded commits, and used an app-scoped deployment secret with tracked-source packaging.
+- Added public commit-revision verification so accepted uploads or the previous live version cannot falsely report a successful rollout.
+- Tested upload rejection, temporary rollout failures, exact revision matching, and bounded deployment waits.
+
 ## 2026-09-10 — Unified timeline and linked detail drawer
 
 - Combined rulers, events, and painters in one scrollable timeline with collision-free rows, consistent cards, category colors, and a Russian legend.
